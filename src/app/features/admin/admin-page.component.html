@@ -1,6 +1,18 @@
 <div class="admin-container">
+    <ng-container *ngIf="isAuthenticated(); else login">
 
-    <app-mission-by-planet/>
 
-    <app-mission-form [open]="showPanel()" (close)="showPanel.set(false)"></app-mission-form>
+        <app-mission-by-planet/>
+
+        <app-mission-form [open]="showPanel()" (close)="showPanel.set(false)"></app-mission-form>
+
+    </ng-container>
+    <ng-template #login>
+        <div class="admin-login">
+            <h2>Accès administration</h2>
+            <input type="password" [(ngModel)]="passwordInput" placeholder="Mot de passe" (keydown.enter)="checkPassword()" />
+            <!-- <button (click)="checkPassword()">Valider</button>-->
+            <p *ngIf="error" class="error">{{ error }}</p>
+        </div>
+    </ng-template>
 </div>

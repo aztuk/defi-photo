@@ -1,5 +1,5 @@
 <div class="head">
-    <h2>Gestion par planète</h2>
+    <h2>Missions par planète</h2>
 
     <button (click)="editMission(null)">
   <i class="fa-solid fa-plus"></i> Nouvelle mission
@@ -14,12 +14,11 @@
         <div class="planet-avatar">
             <app-planet-avatar [planet]="planet" />
             <h3>{{ planet.name }}</h3>
+            {{ getMissionsForPlanet(planet.id).length }} missions
         </div>
 
         <div class="mission-list">
-            {{ getMissionsForPlanet(planet.id).length }} missions
             <div class="mission-item" *ngFor="let mission of getMissionsForPlanet(planet.id)">
-                <i class="fa fa-regular fa-square"></i>
                 <div class="content">
                     <div class="name">{{ mission.name }}</div>
                     <div class="description">{{ mission.description }}</div>
