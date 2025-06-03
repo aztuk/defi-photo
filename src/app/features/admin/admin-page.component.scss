@@ -1,0 +1,9 @@
+@use '../../../assets/styles/variables' as *;
+.admin-container {
+    position: relative;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 64px 128px;
+}

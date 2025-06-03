@@ -1,0 +1,22 @@
+@use 'variables' as *;
+body {
+    font-size: $rem;
+    font-family: $font-base;
+    background: $background-elevation-400;
+    color: $text-color;
+}
+
+h1,
+h2 {
+    margin: 0;
+}
+
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    border: 1px solid $border-color;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: $background-elevation-300;
+}

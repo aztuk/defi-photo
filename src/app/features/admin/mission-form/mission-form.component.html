@@ -1,0 +1,35 @@
+<div class="overlay" *ngIf="open" (click)="close.emit()">
+</div>
+<div class="panel" *ngIf="open">
+    <div class="head">
+
+        <h2>{{ mission ? 'Modifier' : 'Nouvelle' }} mission</h2>
+        <button class="close" (click)="close.emit()">✖</button>
+    </div>
+
+    <form (ngSubmit)="submit()">
+        <label class="input">
+        Nom
+        <input [(ngModel)]="name" name="name" required />
+      </label>
+
+        <label class="input">
+        Description
+        <textarea [(ngModel)]="description" name="description" required></textarea>
+      </label>
+
+        <div class="planet-list">
+            <div *ngFor="let planet of planetService.planets()">
+                <label class="checkbox">
+                <input type="checkbox"
+  [checked]="selectedPlanets.has(planet.id)"
+  (change)="togglePlanet(planet.id)"
+                />
+            {{ planet.name }}
+          </label>
+            </div>
+        </div>
+
+        <button type="submit">Ajouter</button>
+    </form>
+</div>

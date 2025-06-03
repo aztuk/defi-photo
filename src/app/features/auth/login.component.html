@@ -1,1 +1,16 @@
-<p>login.component works!</p>
+<div class="login-container">
+    <h2>Bienvenue !</h2>
+
+    <label>
+    Ton prénom :
+    <input [(ngModel)]="name" type="text" placeholder="ex : Léa"  />
+  </label>
+
+    <div class="planets-carousel">
+        <app-planet-avatar *ngFor="let p of planets()" [planet]="p" [selected]="selectedPlanet?.id === p.id" (select)="onPlanetSelect(p)"></app-planet-avatar>
+    </div>
+
+    <button (click)="login()" [disabled]="!name.trim() || !selectedPlanet">
+    Entrer
+  </button>
+</div>

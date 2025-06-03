@@ -1,1 +1,12 @@
-<p>home.component works!</p>
+<!-- features/home/home.component.html -->
+<div *ngIf="loading()">Chargement...</div>
+
+<div *ngIf="!loading()">
+    <div *ngFor="let planet of planetsWithProgress()" class="planet-card">
+        <img [src]="planet.image_url" [alt]="planet.name" width="100" />
+        <h2>{{ planet.name }}</h2>
+        <p>{{ planet.missionsValidated }} / {{ planet.missionsProgress.length }} missions</p>
+        <progress [value]="planet.progressPercent" max="100"></progress>
+        <span>{{ planet.progressPercent }}%</span>
+    </div>
+</div>

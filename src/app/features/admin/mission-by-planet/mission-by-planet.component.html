@@ -1,0 +1,43 @@
+<div class="head">
+    <h2>Gestion par planète</h2>
+
+    <button (click)="editMission(null)">
+  <i class="fa-solid fa-plus"></i> Nouvelle mission
+</button>
+
+</div>
+
+<app-mission-form [open]="showForm()" [mission]="editingMission()" (close)="closeForm()"></app-mission-form>
+
+<div class="planet-list">
+    <div class="planet-wrapper" *ngFor="let planet of planets()">
+        <div class="planet-avatar">
+            <app-planet-avatar [planet]="planet" />
+            <h3>{{ planet.name }}</h3>
+        </div>
+
+        <div class="mission-list">
+            {{ getMissionsForPlanet(planet.id).length }} missions
+            <div class="mission-item" *ngFor="let mission of getMissionsForPlanet(planet.id)">
+                <i class="fa fa-regular fa-square"></i>
+                <div class="content">
+                    <div class="name">{{ mission.name }}</div>
+                    <div class="description">{{ mission.description }}</div>
+
+                </div>
+
+                <div class="actions">
+                    <button (click)="editMission(mission)">
+                        <i class="fa fa-solid fa-pen"></i>
+                    </button>
+                    <button (click)="removeLink(mission.id, planet.id)">
+                        <i class="fa fa-solid fa-unlink"></i>
+                    </button>
+                    <button (click)="deleteMission(mission.id)">
+                        <i class="fa fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

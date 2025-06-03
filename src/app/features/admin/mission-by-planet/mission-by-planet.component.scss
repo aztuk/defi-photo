@@ -1,0 +1,104 @@
+@use '../../../../assets/styles/variables' as *;
+:host {
+    width: 900px;
+}
+
+.planet-list {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.head {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 40px;
+    h2 {
+        flex: 1;
+    }
+}
+
+.planet-avatar {
+    width: 200px;
+    position: relative;
+    border: 1px solid $border-color;
+    box-shadow: $shadow-1;
+    border-radius: 16px;
+    background: $background-elevation-400;
+    display: flex;
+    align-items: center;
+    h3 {
+        position: absolute;
+        left: 50%;
+        top: 10px;
+        transform: translateX(-50%);
+        font-family: $font-head;
+        font-size: 2rem;
+        filter: drop-shadow(0 1px 2px $border-color)drop-shadow(0 0 2px $border-color)drop-shadow(0 0 2px $border-color);
+        letter-spacing: 1px;
+    }
+}
+
+.planet-wrapper {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+    border: 1px solid $border-color;
+    box-shadow: $shadow-1;
+    padding: 16px;
+    border-radius: 16px;
+    background: $background-elevation-300;
+}
+
+.mission-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.mission-item {
+    display: flex;
+    align-items: center;
+    background: $background-elevation-400;
+    padding: 12px;
+    border-radius: 8px;
+    gap: 16px;
+    font-size: 13px;
+    border: 1px solid $border-color;
+    .fa {
+        font-size: 16px;
+        &.fa-square {
+            color: $text-color-muted-hard;
+        }
+        &.fa-trash {
+            color: $text-color-danger;
+        }
+    }
+    .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .name {
+        font-weight: bold;
+    }
+    .description {
+        color: $text-color-muted-soft;
+        flex: 1;
+        line-height: 20px;
+        font-size: 12px;
+    }
+    .actions {
+        gap: 4px;
+        display: flex;
+        margin-left: 16px;
+        button {
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+        }
+    }
+}
