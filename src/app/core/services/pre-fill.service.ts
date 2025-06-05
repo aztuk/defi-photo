@@ -16,38 +16,27 @@ export class PreFillService {
     public planetService: PlanetService,
     private userService: UserContextService
   ) {
-    // Effet pour gérer la pré-remplissage
     effect(() => {
-      // 1. Priorité 1 : Query param "planet"
-      const planetNameParam = this.route.snapshot.queryParamMap.get('planet');
-
-      // 2. Planètes chargées
       const planets = this.planetService.getAll();
+      if (planets.length === 0) return;
 
-      // 3. Chercher la planète dans les planètes chargées
-      let matchedPlanet: Planet | null = null;
-      if (planetNameParam && planets.length > 0) {
-        matchedPlanet =
-          planets.find(
-            p => p.name.toLowerCase() === planetNameParam.toLowerCase()
-          ) || null;
-      }
+      // 1. Query param (prioritaire)
+      const planetNameFromUrl = this.route.snapshot.queryParamMap.get('planet');
+      const planetFromUrl = planetNameFromUrl
+        ? planets.find(p => p.name.toLowerCase() === planetNameFromUrl.toLowerCase()) ?? null
+        : null;
 
-      // 4. Prénom & planète dans localStorage via UserContext
-      const storedName = this.userService.name;
-      const storedPlanetName = this.userService.planet;
-      let storedPlanet: Planet | null = null;
-      if (!matchedPlanet && storedPlanetName && planets.length > 0) {
-        storedPlanet =
-          planets.find(
-            p => p.name.toLowerCase() === storedPlanetName.toLowerCase()
-          ) || null;
-      }
+      // 2. Stockage local via UserContextService
+      const storedName = this.userService.userName(); // signal()
+      const storedPlanetName = this.userService.planetName(); // signal()
+      const planetFromStorage = storedPlanetName
+        ? planets.find(p => p.name.toLowerCase() === storedPlanetName.toLowerCase()) ?? null
+        : null;
 
-      // 5. Compose la donnée finale selon priorité
+      // 3. Préférence URL > localStorage
       this.prefillData.set({
-        name: storedName || null,
-        planet: matchedPlanet || storedPlanet || null,
+        name: storedName ?? null,
+        planet: planetFromUrl ?? planetFromStorage ?? null,
       });
     });
   }

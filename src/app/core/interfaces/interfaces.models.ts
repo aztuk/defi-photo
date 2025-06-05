@@ -27,3 +27,8 @@ export interface MissionProgress extends Mission {
   photos_published: number;
   validated: boolean;
 }
+
+export interface UserIdentity {
+  name: string;
+  planet: string;
+}

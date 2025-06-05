@@ -25,23 +25,25 @@ export class LoginComponent {
     private route: ActivatedRoute,
     private user: UserContextService,
     private router: Router,
-    private preFillService: PreFillService
+    private preFillService: PreFillService,
+    private planetService: PlanetService
   ) {
-
-     effect(() => {
-       this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
-
+    effect(() => {
+      // Pré-remplissage si dispo
       const data = this.preFillService.prefillData();
-      if (data) {
-        this.name = data.name ?? 'Quentin';
-        this.selectedPlanet = data.planet;
+      this.name = data.name ?? '';
+      this.selectedPlanet = data.planet;
+
+      // Récupération du paramètre returnUrl
+      this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/planet/' + (data.planet?.name ?? '');
+
+      // Redirection automatique si déjà connecté et planète définie
+      if (this.user.isLoggedIn() && this.user.planetName()) {
+        this.router.navigateByUrl('/planet/' + this.user.planetName());
       }
     });
-
-    if (user.isLoggedIn()) {
-      this.router.navigateByUrl('/');
-    }
   }
+
 
   get planets() {
     return this.preFillService.planetService.planets;
@@ -51,12 +53,21 @@ export class LoginComponent {
     this.selectedPlanet = planet;
   }
 
-  login() {
+  async login() {
     if (!this.name.trim() || !this.selectedPlanet) {
       alert('Merci de renseigner un prénom et de sélectionner une planète.');
       return;
     }
+
+    console.log('[UserContext] Connexion :', this.name.trim(), this.selectedPlanet.name);
     this.user.login(this.name.trim(), this.selectedPlanet.name);
-    this.router.navigateByUrl(this.returnUrl);
+
+    await this.planetService.refresh();
+    this.user.initFromPlanetsList(this.planetService.getAll());
+
+    const target = this.returnUrl || `/planet/${this.selectedPlanet.name}`;
+    console.log('Navigation vers :', target);
+    this.router.navigateByUrl(target);
   }
+
 }

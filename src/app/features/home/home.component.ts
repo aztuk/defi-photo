@@ -20,24 +20,25 @@ export class HomeComponent implements OnInit {
   constructor(
     private planetService: PlanetService,
     private missionService: MissionService
-  ) {}
+  ) { }
 
   async ngOnInit() {
-    const planets = this.planetService.planets();
+    await this.planetService.refresh();
+    await this.missionService.refresh();
+
     const result: PlanetWithMissionsProgress[] = [];
 
-    for (const planet of planets) {
+    for (const planet of this.planetService.planets()) {
       const missions = await this.missionService.getMissionProgressByPlanet(planet.id);
-
-      const missionsValidated = missions.filter(m => m.validated).length;
+      const validated = missions.filter(m => m.validated).length;
       const progressPercent = missions.length === 0
         ? 0
-        : Math.round((missionsValidated / missions.length) * 100);
+        : Math.round((validated / missions.length) * 100);
 
       result.push({
         ...planet,
         missionsProgress: missions,
-        missionsValidated,
+        missionsValidated: validated,
         progressPercent,
       });
     }
@@ -45,4 +46,7 @@ export class HomeComponent implements OnInit {
     this.planetsWithProgress.set(result);
     this.loading.set(false);
   }
+
+
+
 }

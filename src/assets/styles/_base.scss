@@ -2,8 +2,9 @@
 body {
     font-size: $rem;
     font-family: $font-base;
-    background: $background-elevation-400;
+    background-size: cover;
     color: $text-color;
+    min-height: 100vh;
 }
 
 h1,

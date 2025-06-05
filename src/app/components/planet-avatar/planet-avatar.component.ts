@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Planet } from '../../core/interfaces/interfaces.models';
+import { UserContextService } from '../../core/context/user-context.service';
 
 @Component({
   selector: 'app-planet-avatar',
@@ -10,11 +11,11 @@ import { Planet } from '../../core/interfaces/interfaces.models';
   styleUrls: ['./planet-avatar.component.scss'],
 })
 export class PlanetAvatarComponent {
-  @Input() planet!: Planet;
-  @Input() selected = false;
-  @Output() select = new EventEmitter<Planet>();
+  @Input({ required: false }) planet?: Planet;
 
-  onClick() {
-    this.select.emit(this.planet);
-  }
+  private user = inject(UserContextService);
+  readonly userPlanet = computed(() => {
+    return this.planet || this.user.planet();
+  });
+
 }

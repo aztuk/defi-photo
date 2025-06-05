@@ -7,7 +7,7 @@
   </label>
 
     <div class="planets-carousel">
-        <app-planet-avatar *ngFor="let p of planets()" [planet]="p" [selected]="selectedPlanet?.id === p.id" (select)="onPlanetSelect(p)"></app-planet-avatar>
+        <app-planet-avatar [planet]="p" *ngFor="let p of planets()" (click)="onPlanetSelect(p)"></app-planet-avatar>
     </div>
 
     <button (click)="login()" [disabled]="!name.trim() || !selectedPlanet">

@@ -1,0 +1,63 @@
+@use '../../../../assets/styles/variables' as *;
+.header {
+    .identity {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        .text-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0px;
+            filter: drop-shadow(0 0 2px black);
+            .name {
+                color: var(--text-muted);
+                font-size: 13px;
+                font-family: $font-base;
+                font-weight: 400;
+            }
+            .planet {
+                color: var(--text);
+                font-size: 56px;
+                font-family: $font-head;
+                font-weight: 100;
+                font-size: clamp(0.9rem, 10vw, 4rem);
+                line-height: 1.2;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                text-align: center;
+            }
+        }
+        .planet-wrapper {
+            position: relative;
+            right: -24px;
+            flex: 1;
+            width: 100px;
+            filter: drop-shadow(0 0 64px var(--glow)) drop-shadow(0 0 128px black) drop-shadow(0 0 16px var(--glow));
+        }
+    }
+    .progress {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        .text {
+            display: flex;
+            font-size: 11px;
+            justify-content: space-between;
+            .completed-missions-text {
+                color: var(--text);
+            }
+            .ranking {
+                color: var(--text-muted);
+            }
+        }
+        .bar {
+            background: var(--background-mission);
+            height: 6px;
+            border-radius: 6px;
+            .fill {
+                background: var(--progress);
+            }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+<div class="header" *ngIf="planet">
+    <div class="identity">
+
+        <div class="text-wrapper">
+            <div class="name">{{ userName }}</div>
+            <div class="planet">{{ planet.name }}</div>
+        </div>
+        <div class="planet-wrapper">
+            <app-planet-avatar />
+        </div>
+    </div>
+    <div class="progress">
+        <div class="text">
+            <div class="completed-missions-text">{{ completed }} / {{ progress.length }} missions</div>
+            <div class="ranking">Classement : {{ rank }} / {{ total }}</div>
+        </div>
+        <div class="bar">
+            <div class="fill" [style.width.%]="percent"></div>
+        </div>
+    </div>
+</div>

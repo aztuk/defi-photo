@@ -12,7 +12,7 @@
 <div class="planet-list">
     <div class="planet-wrapper" *ngFor="let planet of planets()">
         <div class="planet-avatar">
-            <app-planet-avatar [planet]="planet" />
+            <app-planet-avatar />
             <h3>{{ planet.name }}</h3>
             {{ getMissionsForPlanet(planet.id).length }} missions
         </div>

@@ -1,0 +1,36 @@
+@use '../../../../assets/styles/variables' as *;
+.mission {
+    display: flex;
+    padding: 16px;
+    background: var(--background-mission);
+    border-radius: 8px;
+    border: 1px solid var(--border-mission);
+    gap: 16px;
+    .nb {
+        color: var(--text-muted);
+        font-family: $font-head;
+        font-weight: 700;
+        font-size: 20px;
+    }
+    .text-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        .name {
+            color: var(--text);
+            font-family: $font-head;
+        }
+        .description {
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 300;
+            line-height: 1.5;
+        }
+        .upload-zone {
+            margin-top: 8px;
+            color: var(--progress);
+            font-size: 12px;
+        }
+    }
+}
