@@ -61,3 +61,27 @@
         }
     }
 }
+
+.skeleton {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    height: 1em;
+    animation: pulse 1.2s ease-in-out infinite;
+}
+
+.bar .fill.skeleton {
+    width: 100%;
+    max-width: 80px;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 0.3;
+    }
+}

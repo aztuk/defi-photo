@@ -1,0 +1,7 @@
+<div class="upload-photo">
+    <label class="upload-label">
+    <input type="file" (change)="onFileChange($event)" [disabled]="uploading" />
+    <span *ngIf="!uploading">📸 Ajouter une photo</span>
+    <span *ngIf="uploading">⏳ Envoi en cours...</span>
+  </label>
+</div>

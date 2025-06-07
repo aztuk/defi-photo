@@ -23,41 +23,41 @@ export class MyPlanetComponent implements OnInit {
   constructor(
     private planetService: PlanetService,
     private missionService: MissionService,
-    public user: UserContextService // utilisé dans le template
+    public user: UserContextService
   ) {}
 
   async ngOnInit() {
     this.loading.set(true);
 
-    await this.planetService.refresh();
-    await this.missionService.refresh();
+    await Promise.all([
+      this.planetService.revalidate(),
+      this.missionService.revalidate(),
+    ]);
 
     const allPlanets = this.planetService.getAll();
-
     this.user.initFromPlanetsList(allPlanets);
 
-    const planet = this.user.planet();
-    if (!planet) {
+    const userPlanet = this.user.planet();
+    if (!userPlanet) {
       console.error('[MyPlanet] Planète utilisateur introuvable.');
       return;
     }
 
-    const userProgress = await this.missionService.getMissionProgressByPlanet(planet.id);
+    const allProgressMap = await this.missionService.getAllMissionProgress();
+    const userProgress = allProgressMap.get(userPlanet.id) || [];
+
     this.missionProgress.set(userProgress);
 
-    const allScores = await Promise.all(
-      allPlanets.map(async p => {
-        const missions = await this.missionService.getMissionProgressByPlanet(p.id);
-        return missions.filter(m => m.validated).length;
-      })
+    const userScore = userProgress.filter(m => m.validated).length;
+    const allScores = Array.from(allProgressMap.values()).map(missions =>
+      missions.filter(m => m.validated).length
     );
 
-    const userScore = userProgress.filter(m => m.validated).length;
     const sorted = [...allScores].sort((a, b) => b - a);
     const rank = sorted.indexOf(userScore) + 1;
 
     this.planetRank.set(rank);
-    this.totalPlanets.set(allPlanets.length);
+    this.totalPlanets.set(allScores.length);
     this.loading.set(false);
   }
 

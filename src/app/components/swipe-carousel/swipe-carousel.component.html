@@ -1,0 +1,14 @@
+<div class="carousel">
+    <div class="carousel-track" [style.transform]="'translateX(-' + currentIndex() * 100 + '%)'">
+        <div *ngFor="let item of items; let i = index" class="carousel-item" [class.active]="isSelected(i)" [style.transform]="getItemTransform(i)" (click)="onClick(i)">
+            <ng-container *ngIf="!item.isAddButton; else addTpl">
+                <img [src]="item.imageUrl" alt="Photo" />
+            </ng-container>
+            <ng-template #addTpl>
+                <div class="add-button">
+                    <i class="fa fa-plus"></i>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>

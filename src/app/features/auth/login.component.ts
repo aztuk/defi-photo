@@ -62,7 +62,7 @@ export class LoginComponent {
     console.log('[UserContext] Connexion :', this.name.trim(), this.selectedPlanet.name);
     this.user.login(this.name.trim(), this.selectedPlanet.name);
 
-    await this.planetService.refresh();
+    await this.planetService.revalidate();
     this.user.initFromPlanetsList(this.planetService.getAll());
 
     const target = this.returnUrl || `/planet/${this.selectedPlanet.name}`;

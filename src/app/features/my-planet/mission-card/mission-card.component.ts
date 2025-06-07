@@ -1,15 +1,63 @@
-import { Component, Input } from '@angular/core';
-import { MissionProgress } from '../../../core/interfaces/interfaces.models';
-import { CommonModule, NgForOf } from '@angular/common';
+import { Component, Input, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MissionProgress, SwipeCarouselItem } from '../../../core/interfaces/interfaces.models';
+import { PhotoUploadComponent } from '../../../components/photo-upload/photo-upload.component';
+import { SwipeCarouselComponent } from '../../../components/swipe-carousel/swipe-carousel.component';
+import { PhotoService } from '../../../core/services/photo.service';
+import { UserContextService } from '../../../core/context/user-context.service';
 
 @Component({
   selector: 'app-mission-card',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, PhotoUploadComponent, SwipeCarouselComponent],
   templateUrl: './mission-card.component.html',
-  styleUrl: './mission-card.component.scss'
+  styleUrl: './mission-card.component.scss',
 })
-export class MissionCardComponent {
+export class MissionCardComponent implements OnInit {
   @Input({ required: true }) mission!: MissionProgress;
   @Input({ required: true }) nb!: number;
 
+  readonly carouselItems = signal<SwipeCarouselItem[]>([]);
+
+  constructor(
+    private photoService: PhotoService,
+    private user: UserContextService
+  ) {}
+
+  async ngOnInit() {
+    await this.photoService.revalidate(); // assure que les données sont fraîches
+
+    const planet = this.user.planet();
+    if (!planet) return;
+
+    const photos = this.photoService
+      .getByMissionAndPlanet(this.mission.id, planet.id);
+
+    const items: SwipeCarouselItem[] = photos.map(p => ({
+      id: p.id,
+      imageUrl: p.url,
+      isAddButton: false
+    }));
+
+    // Ajoute le bouton "Ajouter une photo" à la fin
+    items.push({
+      id: 'add-button',
+      imageUrl: '', // ou une string vide
+      isAddButton: true
+    });
+
+    this.carouselItems.set(items);
+
+    console.log('[carouselItems]', this.carouselItems());
+  }
+
+  onPhotoClick(photo: SwipeCarouselItem) {
+    // TODO: Afficher en plein écran
+    console.log('Photo sélectionnée :', photo);
+  }
+
+  onAddPhoto() {
+    // TODO: Déclenchement UI d’upload
+    console.log('Ajout photo demandé pour', this.mission.id);
+  }
 }

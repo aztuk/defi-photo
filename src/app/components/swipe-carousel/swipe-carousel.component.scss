@@ -1,0 +1,44 @@
+// src/app/components/swipe-carousel/swipe-carousel.component.scss
+.carousel {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+    .carousel-track {
+        display: flex;
+        transition: transform 0.3s ease;
+        will-change: transform;
+        touch-action: pan-y; // bloque le scroll horizontal de la page
+    }
+    .carousel-item {
+        min-width: 100%;
+        padding: 1rem;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        opacity: 0.4;
+        transform: scale(0.9);
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        &.selected {
+            opacity: 1;
+            transform: scale(1);
+            z-index: 2;
+        }
+        img {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+        }
+    }
+}
+
+.add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    width: 100%;
+    height: 100%;
+    color: white;
+    font-size: 2rem;
+}

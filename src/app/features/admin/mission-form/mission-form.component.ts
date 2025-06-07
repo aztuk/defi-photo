@@ -34,8 +34,10 @@ export class MissionFormComponent implements OnChanges, OnDestroy {
 
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['open'] && this.open) {
-      await this.planetService.refresh();
-      await this.missionService.refresh();
+      await Promise.all([
+        this.planetService.revalidate(),
+        this.missionService.revalidate(),
+      ]);
       this.planets = this.planetService.getAll();
 
       if (this.mission) {
@@ -87,7 +89,7 @@ export class MissionFormComponent implements OnChanges, OnDestroy {
       await this.missionService.linkToPlanet(missionId, planetId);
     }
 
-    await this.missionService.refresh();
+    await this.missionService.revalidate();
     alert(this.mission ? 'Mission mise à jour' : 'Mission ajoutée');
     this.close.emit();
     this.reset();

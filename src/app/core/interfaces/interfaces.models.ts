@@ -32,3 +32,21 @@ export interface UserIdentity {
   name: string;
   planet: string;
 }
+
+export interface Photo {
+  id: string;
+  mission_id: string;
+  planet_id: string;
+  user_name: string;
+  url: string;
+  status: 'published' | 'pending' | 'rejected';
+  created_at: string;
+}
+
+
+export interface SwipeCarouselItem {
+  id: string;
+  imageUrl: string;
+  alt?: string;
+  isAddButton?: boolean;
+}

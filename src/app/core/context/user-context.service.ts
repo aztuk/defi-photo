@@ -15,7 +15,6 @@ export class UserContextService {
   readonly planetId = computed(() => this._planet()?.id ?? null);
 
   constructor() {
-    this.logout();
     // Étape 1 : lire localStorage
     const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (stored) {

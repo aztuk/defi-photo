@@ -15,6 +15,7 @@ export class MyPlanetHeaderComponent {
   @Input({ required: true }) rank!: number;
   @Input({ required: true }) total!: number;
 
+
   readonly userName;
   readonly planet;
 

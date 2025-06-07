@@ -3,14 +3,8 @@
     <div class="text-wrapper">
         <div class="name">{{ mission.name }}</div>
         <div class="description">{{ mission.description }}</div>
-        <div class="upload-zone">Ajoutez une photo depuis votre téléphone</div>
+        <app-swipe-carousel [items]="carouselItems()" (itemSelected)="onPhotoClick($event)" (selectAdd)="onAddPhoto()" />
+        <app-photo-upload [missionId]="mission.id" />
     </div>
-    <!--
-    <div class="carousel">
 
-        <div *ngFor="let i of [].constructor(mission.photos_published)">
-            <div class="photo">📸</div>
-        </div>
-    </div>
--->
 </div>

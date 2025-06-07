@@ -24,8 +24,10 @@ export class MissionByPlanetComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.planetService.refresh();
-    await this.missionService.refresh();
+      await Promise.all([
+        this.planetService.revalidate(),
+        this.missionService.revalidate(),
+      ]);
 
     this.planets.set(this.planetService.getAll());
   }

@@ -1,6 +1,15 @@
 .planet-card {
     width: 100%;
     cursor: pointer;
+    .planet-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        opacity: 0;
+    }
+    .planet-img.loaded {
+        opacity: 1;
+    }
     img {
         width: 100%;
         object-fit: contain;
