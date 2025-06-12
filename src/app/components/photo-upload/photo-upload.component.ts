@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PhotoService } from '../../core/services/photo.service';
 import { UserContextService } from '../../core/context/user-context.service';
@@ -12,6 +12,10 @@ import { UserContextService } from '../../core/context/user-context.service';
 })
 export class PhotoUploadComponent {
   @Input({ required: true }) missionId!: string;
+  @Output() photoUploaded = new EventEmitter<void>();
+  @ViewChild('fileInput') fileInputRef?: ElementRef<HTMLInputElement>;
+
+
   uploading = false;
 
   constructor(
@@ -33,12 +37,18 @@ export class PhotoUploadComponent {
     this.uploading = true;
     try {
       await this.photoService.upload(file, this.missionId, planet.id, name);
-      alert('✅ Photo envoyée !');
-    } catch (err: any) {
-      console.error(err);
-      alert('❌ Erreur upload : ' + err.message);
-    } finally {
-      this.uploading = false;
+
+  this.photoUploaded.emit(); // <== nouvelle ligne
+      } catch (err: any) {
+        console.error(err);
+        alert('❌ Erreur upload : ' + err.message);
+      } finally {
+        this.uploading = false;
+      }
     }
+
+  onClick() {
+    this.fileInputRef?.nativeElement.click();
   }
+
 }

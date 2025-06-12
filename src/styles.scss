@@ -8,9 +8,12 @@
 /* Définition des couleurs par planète */
 
 body.planet-mercure {
-    --background: #0a0707;
-    --background-mission: #73695404;
-    --border-mission: #a1967f15;
+    --background: #130d0d8f;
+    --background-mission: #382d298f;
+    --background-carousel: #040202;
+    --background-success: #55f3b113;
+    --text-success: #55f3b1;
+    --border-mission: #a1877f47;
     --text: #d7cfbe;
     --text-muted: #938a7c;
     --progress: #efb6a5;
@@ -32,7 +35,7 @@ body.planet-venus {
 body.planet-terre {
     --background: #081a19;
     --background-mission: #83ecf108;
-    --border-mission: #8d855e15;
+    --border-mission: #8d855e3f;
     --text: #e3eded;
     --text-muted: #689799;
     --progress: #c0fd7d;
@@ -85,14 +88,14 @@ body.planet-uranus {
 }
 
 body.planet-neptune {
-    --background: #02060a;
-    --background-mission: #5e668d04;
+    --background: #02090a;
+    --background-mission: #5e8d8b04;
     --border-mission: #5e898d15;
-    --text: #e3e7ef;
-    --text-muted: #667689;
-    --progress: #5682d3;
-    --glow: #75acff21;
-    --hue: 15deg;
+    --text: #ffffff;
+    --text-muted: #66868d;
+    --progress: #34b7c5;
+    --glow: #00b8ff21;
+    --hue: -7deg;
 }
 
 body.planet-pluton {

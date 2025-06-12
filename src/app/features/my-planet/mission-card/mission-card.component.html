@@ -1,10 +1,10 @@
-<div class="mission">
-    <div class="nb">#{{nb}}</div>
+<div class="mission" [class.validated]="mission.validated">
+    <div *ngIf="!mission.validated" class="nb">Défi {{nb + 1}}</div>
+    <div *ngIf="mission.validated" class="nb">✔ Défi {{nb + 1}} terminé!</div>
     <div class="text-wrapper">
         <div class="name">{{ mission.name }}</div>
         <div class="description">{{ mission.description }}</div>
-        <app-swipe-carousel [items]="carouselItems()" (itemSelected)="onPhotoClick($event)" (selectAdd)="onAddPhoto()" />
-        <app-photo-upload [missionId]="mission.id" />
+        <app-swipe-carousel [items]="carouselItems()" [missionId]="mission.id" (itemSelected)="onPhotoClick($event)" (photoUploaded)="onPhotoUploaded()" />
     </div>
 
 </div>

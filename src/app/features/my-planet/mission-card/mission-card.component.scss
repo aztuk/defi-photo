@@ -1,31 +1,42 @@
 @use '../../../../assets/styles/variables' as *;
 .mission {
     display: flex;
-    padding: 16px;
+    flex-direction: column;
+    padding: 24px;
     background: var(--background-mission);
-    border-radius: 8px;
-    border: 1px solid var(--border-mission);
-    gap: 16px;
+    border-top: 1px solid var(--border-mission);
+    gap: 8px;
     .nb {
         color: var(--text-muted);
-        font-family: $font-head;
         font-weight: 700;
-        font-size: 20px;
+        font-size: 13px;
     }
     .text-wrapper {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 8px;
         flex: 1;
+        width: 100%;
         .name {
             color: var(--text);
             font-family: $font-head;
+            font-size: 24px;
         }
         .description {
             color: var(--text-muted);
-            font-size: 12px;
+            font-size: 15px;
             font-weight: 300;
             line-height: 1.5;
+            margin-bottom: 32px;
+        }
+    }
+    transition: border 0.3s,
+    box-shadow 0.3s;
+    &.validated {
+        position: relative;
+        background: var(--background-success);
+        .nb {
+            color: var(--text-success);
         }
     }
 }

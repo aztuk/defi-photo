@@ -23,7 +23,7 @@ export class PhotoService {
     return this.photos();
   }
 
-  async revalidate(force = false) {
+  async revalidate(force = false, order: 'asc' | 'desc' = 'desc') {
     const now = Date.now();
     if (!force && now - this.lastFetched < this.TTL && this.photos().length > 0) {
       return;
@@ -34,7 +34,7 @@ export class PhotoService {
       .from('photos')
       .select('*')
       .eq('status', 'published')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: order === 'asc' });
 
     if (error) {
       console.error('[PhotoService] Erreur chargement photos :', error.message);
@@ -46,44 +46,52 @@ export class PhotoService {
     this.loading.set(false);
   }
 
+
   getByMissionAndPlanet(missionId: string, planetId: string): Photo[] {
     return this.photos().filter(p => p.mission_id === missionId && p.planet_id === planetId);
   }
 
   async upload(file: File, missionId: string, planetId: string, userName: string) {
-  const extension = file.name.split('.').pop();
-  const path = `${planetId}/${missionId}/${Date.now()}.${extension}`;
+    const extension = file.name.split('.').pop();
+    const path = `${planetId}/${missionId}/${Date.now()}.${extension}`;
 
-  const { error: uploadError } = await this.supabase
-    .storage
-    .from('photos')
-    .upload(path, file);
+    const { error: uploadError } = await this.supabase
+      .storage
+      .from('photos')
+      .upload(path, file);
 
-  if (uploadError) {
-    console.error('[PhotoService] Erreur upload fichier:', uploadError.message);
-    throw uploadError;
+    if (uploadError) {
+      console.error('[PhotoService] Erreur upload fichier:', uploadError.message);
+      throw uploadError;
+    }
+
+    const { publicUrl } = this.supabase
+      .storage
+      .from('photos')
+      .getPublicUrl(path).data;
+
+    const { error: insertError } = await this.supabase.from('photos').insert({
+      mission_id: missionId,
+      planet_id: planetId,
+      user_name: userName,
+      url: publicUrl,
+      status: 'published',
+    });
+
+    if (insertError) {
+      console.error('[PhotoService] Erreur insertion table photos:', insertError.message);
+      throw insertError;
+    }
+
+    // ✅ Met à jour la mission comme validée dans planet_missions
+    await this.supabase
+      .from('planet_missions')
+      .update({ validated: true })
+      .match({ mission_id: missionId, planet_id: planetId });
+
+    await this.revalidate(true);
   }
 
-  const { publicUrl } = this.supabase
-    .storage
-    .from('photos')
-    .getPublicUrl(path).data;
-
-  const { error: insertError } = await this.supabase.from('photos').insert({
-    mission_id: missionId,
-    planet_id: planetId,
-    user_name: userName,
-    url: publicUrl,
-    status: 'published',
-  });
-
-  if (insertError) {
-    console.error('[PhotoService] Erreur insertion table photos:', insertError.message);
-    throw insertError;
-  }
-
-  await this.revalidate(true);
-}
 
 
 }

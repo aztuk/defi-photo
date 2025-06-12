@@ -1,7 +1,4 @@
-<div class="upload-photo">
-    <label class="upload-label">
-    <input type="file" (change)="onFileChange($event)" [disabled]="uploading" />
-    <span *ngIf="!uploading">📸 Ajouter une photo</span>
-    <span *ngIf="uploading">⏳ Envoi en cours...</span>
-  </label>
+<div class="upload-wrapper" (click)="onClick()">
+    <ng-content></ng-content>
+    <input #fileInput type="file" accept="image/*" (change)="onFileChange($event)" hidden />
 </div>

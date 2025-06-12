@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, signal } from '@angular/core';
+import { Component, Input, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MissionProgress, SwipeCarouselItem } from '../../../core/interfaces/interfaces.models';
 import { PhotoUploadComponent } from '../../../components/photo-upload/photo-upload.component';
@@ -9,11 +9,13 @@ import { UserContextService } from '../../../core/context/user-context.service';
 @Component({
   selector: 'app-mission-card',
   standalone: true,
-  imports: [CommonModule, PhotoUploadComponent, SwipeCarouselComponent],
+  imports: [CommonModule, SwipeCarouselComponent],
   templateUrl: './mission-card.component.html',
   styleUrl: './mission-card.component.scss',
 })
 export class MissionCardComponent implements OnInit {
+  @ViewChild(SwipeCarouselComponent) carouselRef?: SwipeCarouselComponent;
+
   @Input({ required: true }) mission!: MissionProgress;
   @Input({ required: true }) nb!: number;
 
@@ -47,8 +49,6 @@ export class MissionCardComponent implements OnInit {
     });
 
     this.carouselItems.set(items);
-
-    console.log('[carouselItems]', this.carouselItems());
   }
 
   onPhotoClick(photo: SwipeCarouselItem) {
@@ -56,8 +56,41 @@ export class MissionCardComponent implements OnInit {
     console.log('Photo sélectionnée :', photo);
   }
 
-  onAddPhoto() {
-    // TODO: Déclenchement UI d’upload
-    console.log('Ajout photo demandé pour', this.mission.id);
+  isValidated(): boolean {
+    return this.mission.validated;
   }
+
+  async onPhotoUploaded() {
+    const planet = this.user.planet();
+    if (!planet) return;
+
+    await this.photoService.revalidate(true, 'asc');
+
+
+    const photos = this.photoService.getByMissionAndPlanet(this.mission.id, planet.id);
+    const items: SwipeCarouselItem[] = photos.map(p => ({
+      id: p.id,
+      imageUrl: p.url,
+      isAddButton: false
+    }));
+
+    // Réajoute le bouton "Ajouter"
+    items.push({
+      id: 'add-button',
+      imageUrl: '',
+      isAddButton: true
+    });
+
+    this.carouselItems.set(items);
+
+    // Met à jour la mission comme validée
+    if (!this.mission.validated && photos.length > 0) {
+      this.mission.validated = true;
+      this.mission.photos_published = photos.length;
+      // ⚠️ Ajouter ici feedback UI si besoin
+    }
+
+     this.carouselRef?.scrollTo(items.length - 2);
+  }
+
 }

@@ -1,5 +1,6 @@
 @use '../../../../assets/styles/variables' as *;
 .header {
+    padding: 32px;
     .identity {
         display: flex;
         align-items: center;
@@ -11,7 +12,7 @@
             filter: drop-shadow(0 0 2px black);
             .name {
                 color: var(--text-muted);
-                font-size: 13px;
+                font-size: 15px;
                 font-family: $font-base;
                 font-weight: 400;
             }
@@ -42,7 +43,7 @@
         gap: 6px;
         .text {
             display: flex;
-            font-size: 11px;
+            font-size: 13px;
             justify-content: space-between;
             .completed-missions-text {
                 color: var(--text);
@@ -59,29 +60,5 @@
                 background: var(--progress);
             }
         }
-    }
-}
-
-.skeleton {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    height: 1em;
-    animation: pulse 1.2s ease-in-out infinite;
-}
-
-.bar .fill.skeleton {
-    width: 100%;
-    max-width: 80px;
-}
-
-@keyframes pulse {
-    0% {
-        opacity: 0.3;
-    }
-    50% {
-        opacity: 0.7;
-    }
-    100% {
-        opacity: 0.3;
     }
 }

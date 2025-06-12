@@ -1,5 +1,11 @@
-.upload-photo {
-    margin-top: 8px;
-    color: var(--progress);
-    font-size: 12px;
+:host {
+    display: block;
+    width: 100%;
+}
+
+.upload-wrapper {
+    cursor: pointer;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
 }

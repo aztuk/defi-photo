@@ -12,11 +12,11 @@ export class MissionService {
   private readonly supabase: SupabaseClient = supabase;
 
   readonly missions = signal<Mission[]>([]);
-  readonly planetMissions = signal<{ mission_id: string; planet_id: string }[]>([]);
+  readonly planetMissions = signal<{ mission_id: string; planet_id: string; validated: boolean }[]>([]);
 
   constructor(private cache: CacheService) {
     const cachedMissions = this.cache.restore<Mission[]>(CACHE_MISSIONS);
-    const cachedLinks = this.cache.restore<{ mission_id: string; planet_id: string }[]>(CACHE_LINKS);
+    const cachedLinks = this.cache.restore<{ mission_id: string; planet_id: string; validated: boolean }[]>(CACHE_LINKS);
 
     if (cachedMissions) this.missions.set(cachedMissions);
     if (cachedLinks) this.planetMissions.set(cachedLinks);
@@ -38,7 +38,10 @@ export class MissionService {
   }
 
   async loadLinks() {
-    const { data, error } = await this.supabase.from('planet_missions').select('*');
+    const { data, error } = await this.supabase
+      .from('planet_missions')
+      .select('planet_id, mission_id, validated');
+
     if (!error && data && this.cache.hasChanged(this.planetMissions(), data)) {
       this.planetMissions.set(data);
       this.cache.save(CACHE_LINKS, data);
@@ -109,7 +112,6 @@ export class MissionService {
     const missionIds = [...new Set(links.map(link => link.mission_id))];
     const missions = this.missions();
 
-    // 1. Récupérer le nombre de photos publiées par mission ET par planète
     const { data: photoCounts, error } = await this.supabase
       .from('photos')
       .select('planet_id, mission_id, count:mission_id', { count: 'exact', head: false })
@@ -121,14 +123,12 @@ export class MissionService {
       return new Map();
     }
 
-    // 2. Organisation des counts dans une Map<planet_id+mission_id, count>
     const countMap = new Map<string, number>();
     for (const row of photoCounts || []) {
       const key = `${row.planet_id}::${row.mission_id}`;
       countMap.set(key, row.count);
     }
 
-    // 3. Regroupement par planète
     const result = new Map<string, MissionProgress[]>();
     for (const link of links) {
       const key = `${link.planet_id}::${link.mission_id}`;
@@ -139,7 +139,7 @@ export class MissionService {
       const entry: MissionProgress = {
         ...mission,
         photos_published: count,
-        validated: count > 0,
+        validated: link.validated || count > 0,
       };
 
       if (!result.has(link.planet_id)) {
@@ -147,12 +147,11 @@ export class MissionService {
       }
 
       result.get(link.planet_id)!.push(entry);
+      result.get(link.planet_id)!.sort((a, b) => a.name.localeCompare(b.name));
+
     }
 
     console.timeEnd('[MissionService] getAllMissionProgress');
     return result;
   }
-
-
-
 }

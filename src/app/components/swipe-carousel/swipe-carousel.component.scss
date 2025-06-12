@@ -1,44 +1,96 @@
-// src/app/components/swipe-carousel/swipe-carousel.component.scss
-.carousel {
+@use '../../../assets/styles/variables' as *;
+@use '../../../assets/styles/mixins' as *;
+.carousel-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+    @include applyShadow(var(--background));
+    border: 1px solid var(--border-mission);
+}
+
+.carousel-wrapper {
     overflow: hidden;
     width: 100%;
-    position: relative;
-    .carousel-track {
-        display: flex;
-        transition: transform 0.3s ease;
-        will-change: transform;
-        touch-action: pan-y; // bloque le scroll horizontal de la page
+}
+
+
+/* swipe-carousel.component.scss */
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.3s ease;
+    touch-action: pan-y; // <-- empêche swipe horizontal natif
+    user-select: none;
+}
+
+.carousel-item {
+    flex: 0 0 100%;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    background: radial-gradient(var(--background), var(--background-carousel));
+    border-radius: 8px;
+    width: 100%;
+    height: 40vh;
+    min-height: 300px;
+    max-height: 320px;
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 8px;
     }
-    .carousel-item {
-        min-width: 100%;
-        padding: 1rem;
-        transition: transform 0.3s ease, opacity 0.3s ease;
-        opacity: 0.4;
-        transform: scale(0.9);
-        cursor: pointer;
+    .add-button {
+        width: 100%;
+        height: 483px;
+        color: var(--progress);
+        text-align: center;
         display: flex;
         justify-content: center;
-        &.selected {
-            opacity: 1;
-            transform: scale(1);
-            z-index: 2;
-        }
-        img {
-            max-width: 100%;
-            border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-        }
+        align-items: center;
+        font-size: 15px;
     }
 }
 
-.add-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    width: 100%;
-    height: 100%;
+.nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
     color: white;
-    font-size: 2rem;
+    font-size: 32px;
+    z-index: 10;
+    cursor: pointer;
+    &.left {
+        left: 10px;
+    }
+    &.right {
+        right: 10px;
+    }
+}
+
+.dots {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.8);
+        transition: background 0.2s ease;
+        border: 1px solid rgba(0, 0, 0, 0);
+        &.active {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.8);
+        }
+    }
 }
