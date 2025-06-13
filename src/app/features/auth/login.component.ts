@@ -54,6 +54,7 @@ export class LoginComponent {
   }
 
   async login() {
+    this.enterFullscreen();
     if (!this.name.trim() || !this.selectedPlanet) {
       alert('Merci de renseigner un prénom et de sélectionner une planète.');
       return;
@@ -69,5 +70,22 @@ export class LoginComponent {
     console.log('Navigation vers :', target);
     this.router.navigateByUrl(target);
   }
+
+  enterFullscreen() {
+  const elem = document.documentElement;
+  const method =
+    elem.requestFullscreen ||
+    (elem as any).webkitRequestFullscreen ||
+    (elem as any).msRequestFullscreen;
+
+  if (method) {
+    method.call(elem).catch(err => {
+      console.warn('Le plein écran a été refusé :', err);
+    });
+  } else {
+    console.warn('Fullscreen API non disponible sur ce navigateur.');
+  }
+  }
+
 
 }

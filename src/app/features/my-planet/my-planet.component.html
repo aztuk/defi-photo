@@ -1,5 +1,5 @@
 <ng-container *ngIf="!loading(); else loadingTpl">
-    <!-- <button (click)="logout()">Logout</button>-->
+    <button (click)="logout()">Logout</button>
     <app-my-planet-header [progress]="missionProgress()" [rank]="planetRank()!" [total]="totalPlanets()" />
 
     <section class="mission-list">
