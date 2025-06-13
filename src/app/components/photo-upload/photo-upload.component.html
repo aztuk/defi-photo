@@ -1,4 +1,9 @@
 <div class="upload-wrapper" (click)="onClick()">
-    <ng-content></ng-content>
+    <ng-content *ngIf="!uploading"></ng-content>
+
     <input #fileInput type="file" accept="image/*" (change)="onFileChange($event)" hidden />
+
+    <div class="loader-overlay" *ngIf="uploading">
+        <div class="spinner"></div>
+    </div>
 </div>

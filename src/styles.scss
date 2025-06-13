@@ -12,89 +12,118 @@ body.planet-mercure {
     --background-mission: #382d298f;
     --background-carousel: #040202;
     --background-success: #55f3b113;
+    --background-header: #180e0eaf;
     --text-success: #55f3b1;
     --border-mission: #a1877f47;
-    --text: #d7cfbe;
-    --text-muted: #938a7c;
+    --text: #faf5f3;
+    --text-muted: #b3a59c;
     --progress: #efb6a5;
-    --glow: #e0a9a52a;
+    --glow: #e0a9a581;
     --hue: 150deg;
 }
 
 body.planet-venus {
-    --background: #100c05;
-    --background-mission: #8d855e04;
-    --border-mission: #8d855e15;
-    --text: #ffe8b9;
-    --text-muted: #a1925d;
+    --background: #13110d8f;
+    --background-mission: #47422a2c;
+    --background-carousel: #100c05;
+    --background-success: #55f3b11a;
+    --background-header: #18170eaf;
+    --text-success: #55f3b1;
+    --border-mission: #8d855e2a;
+    --text: #fffaef;
+    --text-muted: #bdaf7e;
     --progress: #e5c54f;
-    --glow: #e0d7a52a;
+    --glow: #e0d7a581;
     --hue: 195deg;
 }
 
 body.planet-terre {
     --background: #081a19;
     --background-mission: #83ecf108;
-    --border-mission: #8d855e3f;
-    --text: #e3eded;
+    --background-carousel: #05100b;
+    --background-success: #13ff9d1a;
+    --background-header: #0e1812af;
+    --text-success: #55f3b1;
+    --border-mission: #5e8d605e;
+    --text: #efffff;
     --text-muted: #689799;
     --progress: #c0fd7d;
-    --glow: #8ae9842a;
+    --glow: #8ae98481;
     --hue: -65deg;
 }
 
 body.planet-mars {
     --background: #0e0805;
-    --background-mission: #8d7e5e09;
-    --border-mission: #8d7e5e15;
-    --text: #ffe8b9;
-    --text-muted: #8d7e5e;
-    --progress: #dc7633;
-    --glow: #dc773321;
+    --background-mission: #8d7e5e25;
+    --background-carousel: #100a05;
+    --background-success: #13ff9d1a;
+    --background-header: #18130eaf;
+    --text-success: #55f3b1;
+    --border-mission: #8d7e5e4d;
+    --text: #fcf2df;
+    --text-muted: #afa182;
+    --progress: #f87721;
+    --glow: #dc773381;
     --hue: 175deg;
 }
 
 body.planet-jupiter {
     --background: #1c140d;
-    --background-mission: #f1ac8308;
-    --border-mission: #8d855e15;
-    --text: #cbc6aa;
-    --text-muted: #937c59;
-    --progress: #ffc34b;
-    --glow: #e9ca842a;
+    --background-mission: #f1ab8327;
+    --background-carousel: #100a05;
+    --background-success: #13ff9d1a;
+    --background-header: #251d15b0;
+    --text-success: #55f3b1;
+    --border-mission: #8d7d5e44;
+    --text: #f3edc9;
+    --text-muted: #b6a285;
+    --progress: #ffb41d;
+    --glow: #e9ca8481;
     --hue: 190deg;
 }
 
 body.planet-saturne {
     --background: #0f121a;
-    --background-mission: #5e758d04;
-    --border-mission: #5e6c8d15;
-    --text: #dee1cb;
-    --text-muted: #6e7b7d;
-    --progress: #bd9769;
-    --glow: #ffa50021;
+    --background-mission: #5e758d34;
+    --background-carousel: #050810;
+    --background-success: #13ff9d1a;
+    --background-header: #151625b0;
+    --text-success: #55f3b1;
+    --border-mission: #6b7a9e73;
+    --text: #eceef7;
+    --text-muted: #82a2a7;
+    --progress: #f3cb9a;
+    --glow: #ffa50081;
     --hue: 5deg;
 }
 
 body.planet-uranus {
-    --background: #02090a;
-    --background-mission: #5e8d8b04;
-    --border-mission: #5e898d15;
+    --background: #0924228f;
+    --background-mission: #5e8d8533;
+    --background-carousel: #040e0b;
+    --background-success: #13ff9d1a;
+    --background-header: #152425b0;
+    --text-success: #55f3b1;
+    --border-mission: #5e898d57;
     --text: #ffffff;
-    --text-muted: #66868d;
-    --progress: #34b7c5;
-    --glow: #00b8ff21;
+    --text-muted: #83a1a8;
+    --progress: #1cece2;
+    --glow: #00b8ff81;
     --hue: -7deg;
 }
 
 body.planet-neptune {
     --background: #02090a;
-    --background-mission: #5e8d8b04;
-    --border-mission: #5e898d15;
+    --background-mission: #5e7c8d36;
+    --background-carousel: #040c0e;
+    --background-success: #13dcff1a;
+    --background-header: #182b38b0;
+    --text-success: #55f3b1;
+    --border-mission: #5e7e8d57;
     --text: #ffffff;
-    --text-muted: #66868d;
-    --progress: #34b7c5;
-    --glow: #00b8ff21;
+    --text-muted: #84b1bb;
+    --progress: #11e7ff;
+    --glow: #00b7ff81;
     --hue: -7deg;
 }
 

@@ -9,7 +9,8 @@ import { ThemeService } from './core/services/theme.service';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, BottomNavComponent],
-  templateUrl: "./app.component.html"
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.scss"]
 })
 export class AppComponent {
 

@@ -1,4 +1,4 @@
-<div class="header" *ngIf="planet">
+<header class="header" *ngIf="planet" [style.--shrink]="shrinkRatio()">
     <div class="identity">
         <div class="text-wrapper">
             <div class="name">{{ userName }}</div>
@@ -18,4 +18,4 @@
             <div class="fill" [style.width.%]="percent"></div>
         </div>
     </div>
-</div>
+</header>
