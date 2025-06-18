@@ -8,7 +8,7 @@ import { Planet } from '../../core/interfaces/interfaces.models';
 @Component({
   selector: 'app-bottom-nav',
   standalone: true,
-  imports: [CommonModule, RouterModule, PlanetAvatarComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './bottom-nav.component.html',
   styleUrls: ['./bottom-nav.component.scss'],
 })

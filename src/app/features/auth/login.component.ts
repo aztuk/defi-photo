@@ -7,17 +7,21 @@ import { PlanetAvatarComponent } from '../../components/planet-avatar/planet-ava
 import { PlanetService } from '../../core/services/planet.service';
 import { Planet } from '../../core/interfaces/interfaces.models';
 import { PreFillService } from '../../core/services/pre-fill.service';
+import { supabase } from '../../core/services/supabase.client';
+import { PlanetSelectorComponent } from "./login/planet-selector.component";
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, PlanetAvatarComponent],
+  imports: [CommonModule, FormsModule, PlanetAvatarComponent, PlanetSelectorComponent],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
   name = 'Quentin';
   selectedPlanet: Planet | null = null;
+  showPlanetPicker = false;
+
 
   private returnUrl: string = '/';
 
@@ -29,19 +33,21 @@ export class LoginComponent {
     private planetService: PlanetService
   ) {
     effect(() => {
-      // Pré-remplissage si dispo
       const data = this.preFillService.prefillData();
       this.name = data.name ?? '';
       this.selectedPlanet = data.planet;
 
-      // Récupération du paramètre returnUrl
       this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/planet/' + (data.planet?.name ?? '');
 
-      // Redirection automatique si déjà connecté et planète définie
+      if (!this.selectedPlanet) {
+        this.showPlanetPicker = true;
+      }
+
       if (this.user.isLoggedIn() && this.user.planetName()) {
         this.router.navigateByUrl('/planet/' + this.user.planetName());
       }
     });
+
   }
 
 
@@ -50,7 +56,9 @@ export class LoginComponent {
   }
 
   onPlanetSelect(planet: Planet) {
-    this.selectedPlanet = planet;
+    this.selectedPlanet = { ...planet }; // force un nouveau ref
+    this.showPlanetPicker = false;
+    this.user.setTemporaryPlanet(planet.name);
   }
 
   async login() {
@@ -62,7 +70,9 @@ export class LoginComponent {
 
     console.log('[UserContext] Connexion :', this.name.trim(), this.selectedPlanet.name);
     this.user.login(this.name.trim(), this.selectedPlanet.name);
+    this.user.setTemporaryPlanet(null); // 👈 on efface la valeur temporaire
 
+    await this.refreshSupabaseSession();
     await this.planetService.revalidate();
     this.user.initFromPlanetsList(this.planetService.getAll());
 
@@ -85,6 +95,16 @@ export class LoginComponent {
   } else {
     console.warn('Fullscreen API non disponible sur ce navigateur.');
   }
+  }
+
+
+  async refreshSupabaseSession() {
+    const { error } = await supabase.auth.refreshSession();
+    if (error) {
+      console.warn('[Supabase] Erreur refresh session :', error.message);
+    } else {
+      console.log('[Supabase] Session refresh réussie');
+    }
   }
 
 

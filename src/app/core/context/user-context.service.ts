@@ -1,5 +1,6 @@
 import { Injectable, computed, effect, signal } from '@angular/core';
 import { Planet, UserIdentity } from '../interfaces/interfaces.models';
+import { supabase } from '../services/supabase.client';
 
 const LOCAL_STORAGE_KEY = 'defi-photo-user';
 
@@ -7,10 +8,14 @@ const LOCAL_STORAGE_KEY = 'defi-photo-user';
 export class UserContextService {
   private readonly _user = signal<UserIdentity | null>(null);
   private readonly _planet = signal<Planet | null>(null);
+  private readonly _temporaryPlanetName = signal<string | null>(null);
 
   readonly user = computed(() => this._user());
   readonly userName = computed(() => this._user()?.name ?? null);
   readonly planetName = computed(() => this._user()?.planet ?? null);
+  readonly planetNameSignal = computed(() =>
+    this._temporaryPlanetName() ?? this._user()?.planet ?? null
+  );
   readonly planet = computed(() => this._planet());
   readonly planetId = computed(() => this._planet()?.id ?? null);
 
@@ -35,6 +40,11 @@ export class UserContextService {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(u));
       }
     });
+  }
+
+  // Méthode à appeler quand on change de planète dans le login
+  setTemporaryPlanet(name: string | null) {
+    this._temporaryPlanetName.set(name);
   }
 
   login(name: string, planetName: string) {

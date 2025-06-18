@@ -1,16 +1,24 @@
 <div class="login-container">
-    <h2>Bienvenue !</h2>
-
-    <label>
-    Ton prénom :
-    <input [(ngModel)]="name" type="text" placeholder="ex : Léa"  />
-  </label>
-
-    <div class="planets-carousel">
-        <app-planet-avatar [planet]="p" *ngFor="let p of planets()" (click)="onPlanetSelect(p)"></app-planet-avatar>
+    <div class="header">
+        <div class="title">Défi photo</div>
+        <div class="description">Soyez la première table à compléter tous les défis, prenez la pose et soyez créatifs !</div>
     </div>
 
-    <button (click)="login()" [disabled]="!name.trim() || !selectedPlanet">
-    Entrer
-  </button>
+    <div class="form">
+        <label><input [(ngModel)]="name" type="text" placeholder="Prénom" /></label>
+        <!-- ✅ Si planète sélectionnée : avatar -->
+        <div *ngIf="selectedPlanet;" class="selected-planet" (click)="showPlanetPicker = true">
+            <app-planet-avatar [planet]="selectedPlanet" />
+            <div class="text">
+                <div class="planet-name">Table "{{ selectedPlanet.name }}"</div>
+                <div class="hint">Modifier</div>
+
+            </div>
+        </div>
+    </div>
+    <button class="login-button" (click)="login()" [disabled]="!name.trim() || !selectedPlanet">Entrer</button>
 </div>
+
+
+<!-- ✅ Modale planète -->
+<app-planet-selector *ngIf="showPlanetPicker" [planets]="planets()" (select)="onPlanetSelect($event)" (close)="showPlanetPicker = false" />

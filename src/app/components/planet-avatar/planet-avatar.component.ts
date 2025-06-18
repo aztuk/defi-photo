@@ -12,12 +12,9 @@ import { UserContextService } from '../../core/context/user-context.service';
 })
 export class PlanetAvatarComponent {
   @Input({ required: false }) planet?: Planet;
-loaded = false;
+  loaded = false;
 
-  private user = inject(UserContextService);
-  readonly userPlanet = computed(() => {
-    return this.planet || this.user.planet();
-  });
+  user = inject(UserContextService);
 
   onLoad() {
     this.loaded = true;

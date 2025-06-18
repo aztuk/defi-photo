@@ -1,0 +1,13 @@
+<div class="planet-selector">
+    <div class="backdrop" (click)="onClose()"></div>
+
+    <div class="modal">
+        <div class="title">Quelle table êtes-vous ?</div>
+        <div class="grid">
+            <button *ngFor="let p of planets" (click)="onSelect(p)">
+        <app-planet-avatar [planet]="p" />
+        <span>{{ p.name }}</span>
+      </button>
+        </div>
+    </div>
+</div>

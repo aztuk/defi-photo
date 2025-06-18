@@ -7,18 +7,18 @@ export class ThemeService {
   private readonly user = inject(UserContextService);
 
   constructor() {
-    effect(() => {
-      const rawName = this.user.planetName();
-      const name = rawName?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') ?? null;
+      effect(() => {
+        const rawName = this.user.planetNameSignal();
+        const name = rawName?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') ?? null;
 
+        // Supprime toutes les classes "planet-*"
+        document.body.classList.forEach(cls => {
+          if (cls.startsWith('planet-')) document.body.classList.remove(cls);
+        });
 
-      document.body.classList.forEach(cls => {
-        if (cls.startsWith('planet-')) document.body.classList.remove(cls);
+        // Ajoute une classe même si aucun nom
+        document.body.classList.add(`planet-${name ?? 'mercure'}`);
       });
 
-      if (name) {
-        document.body.classList.add(`planet-${name}`);
-      }
-    });
   }
 }
