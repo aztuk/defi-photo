@@ -17,8 +17,10 @@ export class BottomNavComponent {
   public id = this.user.planet;
   public planet!: Planet;
   readonly planetLink = computed(() => {
-    return this.id ? `/planet/${this.id}` : '/planet/unknown';
-});
+  const planet = this.user.planet();
+  return planet ? `/planet/${planet.name}` : '/planet/unknown';
+  });
+
 
   ngOnInit(): void { }
 

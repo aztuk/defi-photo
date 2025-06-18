@@ -1,20 +1,28 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Component, computed, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { UserContextService } from './core/context/user-context.service';
 import { BottomNavComponent } from "./components/bottom-nav/bottom-nav.component";
 import { ThemeService } from './core/services/theme.service';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, BottomNavComponent],
+  imports: [RouterOutlet, BottomNavComponent, CommonModule],
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"]
 })
 export class AppComponent {
+  currentUrl = signal('');
 
   constructor(public router: Router, public theme: ThemeService) {
+    // ✅ À la fin de chaque navigation, on met à jour l'URL courante
+    this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(e => {
+        this.currentUrl.set((e as NavigationEnd).urlAfterRedirects);
+      });
 
   }
 
@@ -22,8 +30,10 @@ export class AppComponent {
     void this.theme;
   }
 
-  shouldShowBottomNav(): boolean {
-    return !this.router.url.startsWith('/login');
-  }
+
+  // ✅ computed pour que ça se mette à jour
+  readonly shouldShowBottomNav = computed(() =>
+    !this.currentUrl().startsWith('/login')
+  );
 
 }
