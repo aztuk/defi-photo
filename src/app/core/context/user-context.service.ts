@@ -58,19 +58,35 @@ export class UserContextService {
   }
 
   /**
-   * Appelé une fois que les planètes sont chargées
+   * Appelé une fois que les planètes sont chargées.
+   * Tente d’associer l’utilisateur à sa planète, ou à défaut à Mercure.
    */
   initFromPlanetsList(planets: Planet[]) {
     const planetName = this._user()?.planet;
-    if (!planetName) return;
 
-    const match = planets.find(p => p.name.toLowerCase() === planetName.toLowerCase());
-    if (match) {
-      this._planet.set(match);
-    } else {
-      console.warn('[UserContext] Planète non trouvée dans la liste :', planetName);
+    let match: Planet | undefined;
+
+    if (planetName) {
+      match = planets.find(p => p.name.toLowerCase() === planetName.toLowerCase());
+      if (!match) {
+        console.warn('[UserContext] Planète non trouvée :', planetName);
+      }
     }
+
+    // Fallback sur Mercure si aucune planète trouvée
+    if (!match) {
+      match = planets.find(p => p.name.toLowerCase() === 'mercure');
+      if (match) {
+        console.warn('[UserContext] Fallback sur Mercure');
+      } else {
+        console.error('[UserContext] Aucune planète valide disponible (Mercure manquante)');
+        return;
+      }
+    }
+
+    this._planet.set(match);
   }
+
 
   isLoggedIn(strict = false): boolean {
     const user = this._user();

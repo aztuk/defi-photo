@@ -7,7 +7,7 @@
     <div class="form">
         <label><input [(ngModel)]="name" type="text" placeholder="Prénom" /></label>
         <!-- ✅ Si planète sélectionnée : avatar -->
-        <div *ngIf="selectedPlanet;" class="selected-planet" (click)="showPlanetPicker = true">
+        <div *ngIf="selectedPlanet" class="selected-planet" (click)="showPlanetPicker = true">
             <app-planet-avatar [planet]="selectedPlanet" />
             <div class="text">
                 <div class="planet-name">Table "{{ selectedPlanet.name }}"</div>
