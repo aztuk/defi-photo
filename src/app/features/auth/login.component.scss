@@ -35,7 +35,7 @@
     .title {
         color: var(--text);
         font-family: $font-head;
-        font-size: 32px;
+        font-size: 48px;
     }
     .description {
         color: var(--text-muted);
@@ -49,10 +49,8 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     gap: 4rem;
-    padding: 40px;
+    padding: 120px 40px 40px;
 }
 
 .form {
@@ -84,7 +82,7 @@
     .planet-name {
         color: var(--text);
         font-family: $font-head;
-        font-size: 21px;
+        font-size: 24px;
     }
     .hint {
         color: var(--progress);

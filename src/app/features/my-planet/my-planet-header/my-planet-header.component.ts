@@ -11,13 +11,15 @@ import { MissionProgress } from '../../../core/interfaces/interfaces.models';
 import { UserContextService } from '../../../core/context/user-context.service';
 import { CommonModule } from '@angular/common';
 import { PlanetAvatarComponent } from "../../../components/planet-avatar/planet-avatar.component";
+import { ScrollHeaderComponent } from "../../../components/scroll-header/scroll-header.component";
+import { ProgressComponent } from "../../../components/progress/progress.component";
 
 @Component({
   selector: 'app-my-planet-header',
   templateUrl: './my-planet-header.component.html',
   styleUrl: './my-planet-header.component.scss',
   standalone: true,
-  imports: [CommonModule, PlanetAvatarComponent]
+  imports: [CommonModule, PlanetAvatarComponent, ScrollHeaderComponent, ProgressComponent]
 })
 export class MyPlanetHeaderComponent implements OnInit, AfterViewInit {
   @Input({ required: true }) progress!: MissionProgress[];

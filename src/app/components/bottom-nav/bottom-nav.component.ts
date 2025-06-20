@@ -24,4 +24,9 @@ export class BottomNavComponent {
 
   ngOnInit(): void { }
 
+  logout() {
+    this.user.logout();
+
+  }
+
 }

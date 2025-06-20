@@ -1,11 +1,5 @@
 @use '../../../../assets/styles/variables' as *;
 .header {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: var(--background-header);
-    backdrop-filter: blur(15px);
-    transition: padding 0.3s ease;
     .identity {
         display: flex;
         align-items: center;
@@ -15,14 +9,14 @@
         .text-wrapper {
             filter: drop-shadow(0 0 2px black);
             flex: 1;
-            .name {
+            .title {
                 font-size: calc(13px + 3px * var(--shrink));
                 color: var(--text-muted);
                 font-family: $font-base;
                 font-weight: 400;
                 transition: font-size 0.3s ease;
             }
-            .planet {
+            .subtitle {
                 font-size: calc(32px + 32px * var(--shrink));
                 font-family: $font-head;
                 font-weight: 100;
@@ -59,9 +53,12 @@
                 color: var(--text-muted);
             }
         }
-        .bar {
-            background: var(--background-mission);
+        .progress-bar {
             height: 6px;
+        }
+        .bar {
+            height: 6px;
+            background: var(--background-mission);
             border-radius: 6px; // stable (évite l'effet "bulle molle" instable)
             transition: background 0.3s ease;
             overflow: hidden;

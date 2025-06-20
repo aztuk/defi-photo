@@ -1,0 +1,30 @@
+@use '../../../assets/styles/variables' as *;
+@use '../../../assets/styles/planet-colors' as pc;
+@use 'sass:color';
+:host {
+    display: block;
+}
+
+.bar-bg {
+    background: var(--background-mission);
+    border-radius: 6px;
+    height: 100%;
+    // Génération des couleurs
+    @each $planet,
+    $color in pc.$planet-progress-colors {
+        $shadow: rgba($color, .3);
+        &.planet-#{$planet} .bar-fill {
+            background-color: $color;
+            background: linear-gradient(to top, color.scale($color, $lightness: -25%, $saturation: +30%), $color);
+            box-shadow: inset 0 0 4px $shadow, 0 0 16px $shadow, 0 0 32px $shadow;
+        }
+    }
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(to top, var(--progress-dark), var(--progress));
+    transition: width 0.3s ease;
+    box-shadow: inset 0 0 4px var(--glow), 0 0 16px var(--glow), 0 0 32px var(--glow);
+}

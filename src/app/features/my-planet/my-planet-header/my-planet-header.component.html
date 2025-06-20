@@ -1,4 +1,4 @@
-<header class="header" *ngIf="planet" [style.--shrink]="shrinkRatio()">
+<!-- <header class="header" *ngIf="planet" [style.--shrink]="shrinkRatio()">
     <div class="identity">
         <div class="text-wrapper">
             <div class="name">{{ userName }}</div>
@@ -18,4 +18,24 @@
             <div class="fill" [style.width.%]="percent"></div>
         </div>
     </div>
-</header>
+</header> -->
+
+<app-scroll-header class="header">
+    <div class="identity">
+        <div class="text-wrapper">
+            <div class="title">{{ userName }}</div>
+            <div class="subtitle">{{ planet?.name }}</div>
+        </div>
+        <div class="planet-wrapper">
+            <app-planet-avatar />
+        </div>
+    </div>
+
+    <div class="progress">
+        <div class="text">
+            <div class="completed-missions-text">{{ completed }} / {{ progress.length }} missions</div>
+            <div class="ranking">Classement : {{ rank }} / {{ total }}</div>
+        </div>
+        <app-progress class="progress-bar" [value]="percent" />
+    </div>
+</app-scroll-header>

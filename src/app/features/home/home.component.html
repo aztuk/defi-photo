@@ -1,12 +1,30 @@
-<!-- features/home/home.component.html -->
-<div *ngIf="loading()">Chargement...</div>
+<ng-container *ngIf="!loading(); else loadingTpl">
+    <app-scroll-header>
+        <div class="header-content">
+            <div class="title">Classement</div>
+            <div class="subtitle">Vous êtes actuellement </div>
 
-<div *ngIf="!loading()">
-    <div *ngFor="let planet of planetsWithProgress()" class="planet-card">
-        <img [src]="planet.image_url" [alt]="planet.name" width="100" />
-        <h2>{{ planet.name }}</h2>
-        <p>{{ planet.missionsValidated }} / {{ planet.missionsProgress.length }} missions</p>
-        <progress [value]="planet.progressPercent" max="100"></progress>
-        <span>{{ planet.progressPercent }}%</span>
-    </div>
-</div>
+        </div>
+    </app-scroll-header>
+
+    <section class="ranking-list">
+        <div class="ranking-item" *ngFor="let planet of planetsProgress(); let i = index" [ngClass]="{
+        'top-1': i === 0,
+        'top-2': i === 1,
+        'top-3': i === 2
+      }">
+            <div class="rank">#{{ i + 1 }}</div>
+            <div class="details">
+                <div class="planet-name">{{ planet.name }}</div>
+                <app-progress class="progress-bar" [planetName]="planet.name" [value]="planet.progressPercent" />
+            </div>
+            <div class="avatar">
+                <app-planet-avatar [planet]="planet" />
+            </div>
+        </div>
+    </section>
+</ng-container>
+
+<ng-template #loadingTpl>
+    <p>Chargement du classement...</p>
+</ng-template>

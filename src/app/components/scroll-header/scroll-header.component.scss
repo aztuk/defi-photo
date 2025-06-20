@@ -1,0 +1,9 @@
+.scroll-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    backdrop-filter: blur(15px);
+    transition: all 0.3s ease;
+    background: var(--background-header);
+    transition: all 0.3s ease;
+}

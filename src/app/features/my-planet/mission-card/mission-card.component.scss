@@ -34,9 +34,9 @@
     box-shadow 0.3s;
     &.validated {
         position: relative;
-        background: var(--background-success);
+        background: $global-success-bg;
         .nb {
-            color: var(--text-success);
+            color: $global-success-text;
         }
     }
 }

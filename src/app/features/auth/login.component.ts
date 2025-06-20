@@ -31,22 +31,40 @@ export class LoginComponent {
     private router: Router,
     private preFillService: PreFillService,
     private planetService: PlanetService
-  ) {
-    effect(() => {
-      const data = this.preFillService.prefillData();
-      this.name = data.name ?? '';
-      this.selectedPlanet = data.planet;
+  ) {effect(() => {
+  const data = this.preFillService.prefillData();
+  this.name = data.name ?? '';
+  this.selectedPlanet = data.planet ?? null;
 
-      this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/planet/' + (data.planet?.name ?? '');
+  const urlParam = this.route.snapshot.queryParamMap.get('returnUrl');
+  this.returnUrl = urlParam || '/';
 
-      if (!this.selectedPlanet) {
-        this.showPlanetPicker = true;
-      }
+  const planetNameFromUrl = this.returnUrl.match(/\/planet\/([^\/]+)/)?.[1];
 
-      if (this.user.isLoggedIn() && this.user.planetName()) {
-        this.router.navigateByUrl('/planet/' + this.user.planetName());
-      }
-    });
+  if (!this.selectedPlanet && planetNameFromUrl) {
+    const p = this.planets().find(p => p.name.toLowerCase() === planetNameFromUrl.toLowerCase());
+    if (p) {
+      this.selectedPlanet = { ...p };
+      this.user.setTemporaryPlanet(p.name);
+      this.showPlanetPicker = false;
+    }
+  }
+
+  // Si aucune planète, fallback immédiat sur Mercure + ouverture du sélecteur
+  if (!this.selectedPlanet && this.planets().length > 0) {
+    const mercury = this.planets().find(p => p.name.toLowerCase() === 'mercure');
+    if (mercury) {
+      this.selectedPlanet = { ...mercury };
+      this.user.setTemporaryPlanet(mercury.name);
+      this.showPlanetPicker = true;
+    }
+  }
+
+  if (this.user.isLoggedIn() && this.user.planetName()) {
+    this.router.navigateByUrl('/planet/' + this.user.planetName());
+  }
+});
+
 
   }
 

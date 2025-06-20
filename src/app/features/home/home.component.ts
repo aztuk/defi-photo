@@ -1,23 +1,31 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PlanetService } from '../../core/services/planet.service';
 import { MissionService } from '../../core/services/mission.service';
 import { MissionProgress, PlanetWithMissionsProgress } from '../../core/interfaces/interfaces.models';
+import { ScrollHeaderComponent } from "../../components/scroll-header/scroll-header.component";
+import { PlanetAvatarComponent } from "../../components/planet-avatar/planet-avatar.component";
+import { UserContextService } from '../../core/context/user-context.service';
+import { ProgressComponent } from '../../components/progress/progress.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ScrollHeaderComponent, PlanetAvatarComponent, ProgressComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
+  readonly planetsProgress = signal<PlanetWithMissionsProgress[]>([]);
   readonly loading = signal(true);
-  readonly planetsWithProgress = signal<PlanetWithMissionsProgress[]>([]);
+
+  readonly userPlanet = computed(() => this.userContext.planet());
+  readonly userName = computed(() => this.userContext.userName());
 
   constructor(
     private planetService: PlanetService,
-    private missionService: MissionService
+    private missionService: MissionService,
+    private userContext: UserContextService
   ) {}
 
   async ngOnInit() {
@@ -29,24 +37,26 @@ export class HomeComponent implements OnInit {
     ]);
 
     const allPlanets = this.planetService.getAll();
-    const allProgressMap = await this.missionService.getAllMissionProgress();
+    this.userContext.initFromPlanetsList(allPlanets);
 
-    const result: PlanetWithMissionsProgress[] = allPlanets.map(planet => {
-      const missions = allProgressMap.get(planet.id) || [];
-      const validated = missions.filter(m => m.validated).length;
-      const progressPercent = missions.length === 0
-        ? 0
-        : Math.round((validated / missions.length) * 100);
+    const progressMap = await this.missionService.getAllMissionProgress();
 
+    const fullList: PlanetWithMissionsProgress[] = this.planetService.getAll().map(p => {
+      const progress = progressMap.get(p.id) || [];
+      const validated = progress.filter(m => m.validated).length;
+      const percent = progress.length === 0 ? 0 : Math.round((validated / progress.length) * 100);
       return {
-        ...planet,
-        missionsProgress: missions,
+        ...p,
+        missionsProgress: progress,
         missionsValidated: validated,
-        progressPercent,
+        progressPercent: percent
       };
     });
 
-    this.planetsWithProgress.set(result);
+    // Tri décroissant par nb de missions validées
+    fullList.sort((a, b) => b.missionsValidated - a.missionsValidated);
+
+    this.planetsProgress.set(fullList);
     this.loading.set(false);
   }
 }
