@@ -12,6 +12,8 @@
 .carousel-wrapper {
     overflow: hidden;
     width: 100%;
+    touch-action: pan-y;
+    user-select: none;
 }
 
 
@@ -25,6 +27,8 @@
 }
 
 .carousel-item {
+    position: relative;
+    pointer-events: auto;
     flex: 0 0 100%;
     max-width: 100%;
     display: flex;
@@ -43,6 +47,7 @@
         object-fit: cover;
         object-position: center;
         border-radius: 8px;
+        pointer-events: none; // Laisse passer les events
     }
     .add-button {
         width: 100%;
@@ -53,6 +58,20 @@
         justify-content: center;
         align-items: center;
         font-size: 15px;
+        pointer-events: auto;
+    }
+    .delete-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 100;
+        background: rgba(0, 0, 0, .3);
+        width: 48px;
+        height: 48px;
+        color: white;
+        border-radius: 50%;
+        pointer-events: auto;
+        backdrop-filter: blur(5px);
     }
 }
 
@@ -66,6 +85,7 @@
     font-size: 32px;
     z-index: 10;
     cursor: pointer;
+    backdrop-filter: blur(5px);
     &.left {
         left: 10px;
     }

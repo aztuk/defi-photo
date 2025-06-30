@@ -105,53 +105,62 @@ export class MissionService {
   /**
    * Retourne une map de planet_id → liste des missions avec le nombre de photos publiées
    */
-  async getAllMissionProgress(): Promise<Map<string, MissionProgress[]>> {
-    console.time('[MissionService] getAllMissionProgress');
+ async getAllMissionProgress(): Promise<Map<string, MissionProgress[]>> {
+  console.time('[MissionService] getAllMissionProgress');
 
-    const links = this.planetMissions();
-    const missionIds = [...new Set(links.map(link => link.mission_id))];
-    const missions = this.missions();
+  const links = this.planetMissions(); // toutes les associations planète/mission
+  const missionIds = [...new Set(links.map(link => link.mission_id))];
+  const missions = this.missions();
 
-    const { data: photoCounts, error } = await this.supabase
-      .from('photos')
-      .select('planet_id, mission_id, count:mission_id', { count: 'exact', head: false })
-      .eq('status', 'published')
-      .in('mission_id', missionIds);
+  if (missionIds.length === 0) return new Map();
 
-    if (error) {
-      console.error('[MissionService] Erreur chargement counts groupés :', error.message);
-      return new Map();
-    }
+  const { data: photos, error } = await this.supabase
+    .from('photos')
+    .select('mission_id, planet_id')
+    .eq('status', 'published')
+    .in('mission_id', missionIds);
 
-    const countMap = new Map<string, number>();
-    for (const row of photoCounts || []) {
-      const key = `${row.planet_id}::${row.mission_id}`;
-      countMap.set(key, row.count);
-    }
-
-    const result = new Map<string, MissionProgress[]>();
-    for (const link of links) {
-      const key = `${link.planet_id}::${link.mission_id}`;
-      const mission = missions.find(m => m.id === link.mission_id);
-      if (!mission) continue;
-
-      const count = countMap.get(key) ?? 0;
-      const entry: MissionProgress = {
-        ...mission,
-        photos_published: count,
-        validated: link.validated || count > 0,
-      };
-
-      if (!result.has(link.planet_id)) {
-        result.set(link.planet_id, []);
-      }
-
-      result.get(link.planet_id)!.push(entry);
-      result.get(link.planet_id)!.sort((a, b) => a.name.localeCompare(b.name));
-
-    }
-
-    console.timeEnd('[MissionService] getAllMissionProgress');
-    return result;
+  if (error) {
+    console.error('[MissionService] Erreur chargement photos :', error.message);
+    return new Map();
   }
+
+  // 🔢 Regroupement : clé = `${planet_id}::${mission_id}` → nombre de photos
+  const photoMap = new Map<string, number>();
+  for (const photo of photos || []) {
+    const key = `${photo.planet_id}::${photo.mission_id}`;
+    photoMap.set(key, (photoMap.get(key) || 0) + 1);
+  }
+
+  const result = new Map<string, MissionProgress[]>();
+
+  for (const link of links) {
+    const key = `${link.planet_id}::${link.mission_id}`;
+    const mission = missions.find(m => m.id === link.mission_id);
+    if (!mission) continue;
+
+    const count = photoMap.get(key) ?? 0;
+
+    const entry: MissionProgress = {
+      ...mission,
+      photos_published: count,
+      validated: link.validated // ✅ on ne se base plus sur count
+    };
+
+    if (!result.has(link.planet_id)) {
+      result.set(link.planet_id, []);
+    }
+
+    result.get(link.planet_id)!.push(entry);
+  }
+
+  // Tri alphabétique pour chaque planète
+  for (const missions of result.values()) {
+    missions.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  console.timeEnd('[MissionService] getAllMissionProgress');
+  return result;
+}
+
 }

@@ -4,7 +4,7 @@
     <div class="text-wrapper">
         <div class="name">{{ mission.name }}</div>
         <div class="description">{{ mission.description }}</div>
-        <app-swipe-carousel [items]="carouselItems()" [missionId]="mission.id" (itemSelected)="onPhotoClick($event)" (photoUploaded)="onPhotoUploaded()" />
+        <app-swipe-carousel [items]="carouselItems()" [missionId]="mission.id" (itemSelected)="onPhotoClick($event)" (photoUploaded)="onPhotoUploaded($event)" (deletePhoto)="onPhotoDelete($event)" />
     </div>
 
 </div>

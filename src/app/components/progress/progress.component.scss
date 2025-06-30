@@ -9,13 +9,14 @@
     background: var(--background-mission);
     border-radius: 6px;
     height: 100%;
+    border: 1px solid var(--border-mission);
     // Génération des couleurs
     @each $planet,
     $color in pc.$planet-progress-colors {
-        $shadow: rgba($color, .3);
+        $shadow: rgba($color, .15);
         &.planet-#{$planet} .bar-fill {
             background-color: $color;
-            background: linear-gradient(to top, color.scale($color, $lightness: -25%, $saturation: +30%), $color);
+            background: linear-gradient(to top, color.scale($color, $lightness: -25%, $saturation: -40%), color.scale($color, $saturation: -40%));
             box-shadow: inset 0 0 4px $shadow, 0 0 16px $shadow, 0 0 32px $shadow;
         }
     }

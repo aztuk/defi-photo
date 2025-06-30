@@ -7,9 +7,13 @@
             <div class="carousel-item" *ngFor="let item of items; let i = index" [class.selected]="i === currentIndex()" (click)="onItemClick(i)">
                 <ng-container *ngIf="!item.isAddButton; else addTpl">
                     <img [src]="item.imageUrl" alt="Photo" />
+                    <button *ngIf="!readonly  && !item.isAddButton" class="delete-btn" (click)="onDeletePhoto(item.id)">
+                      <i class="fa-solid fa-trash" ></i>
+                    </button>
+
                 </ng-container>
                 <ng-template #addTpl>
-                    <app-photo-upload [missionId]="missionId" (photoUploaded)="onPhotoUploaded()">
+                    <app-photo-upload [missionId]="missionId" (photoUploaded)="onPhotoUploaded($event)">
                         <div class="add-button">
                             Tapez pour ajouter une photo!
                         </div>

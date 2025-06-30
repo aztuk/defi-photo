@@ -2,16 +2,18 @@
     <app-scroll-header>
         <div class="header-content">
             <div class="title">Classement</div>
-            <div class="subtitle">Vous êtes actuellement </div>
+            <div class="subtitle" *ngIf="userRank() as rank">Votre table est actuellement {{ rank }} /8</div>
+
 
         </div>
     </app-scroll-header>
 
     <section class="ranking-list">
-        <div class="ranking-item" *ngFor="let planet of planetsProgress(); let i = index" [ngClass]="{
+        <div class="ranking-item" *ngFor="let planet of planetsProgress(); let i = index" (click)="onPlanetClick(planet)" [ngClass]="{
         'top-1': i === 0,
         'top-2': i === 1,
-        'top-3': i === 2
+        'top-3': i === 2,
+       'current-user': isUserPlanet(planet.name)
       }">
             <div class="rank">#{{ i + 1 }}</div>
             <div class="details">

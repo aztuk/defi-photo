@@ -24,10 +24,10 @@
     <div class="identity">
         <div class="text-wrapper">
             <div class="title">{{ userName }}</div>
-            <div class="subtitle">{{ planet?.name }}</div>
+            <div class="subtitle">{{ planet()?.name }}</div>
         </div>
         <div class="planet-wrapper">
-            <app-planet-avatar />
+            <app-planet-avatar [planet]="planet()" />
         </div>
     </div>
 

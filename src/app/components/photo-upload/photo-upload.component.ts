@@ -12,7 +12,7 @@ import { UserContextService } from '../../core/context/user-context.service';
 })
 export class PhotoUploadComponent {
   @Input({ required: true }) missionId!: string;
-  @Output() photoUploaded = new EventEmitter<void>();
+  @Output() photoUploaded = new EventEmitter<File>();
   @ViewChild('fileInput') fileInputRef?: ElementRef<HTMLInputElement>;
 
 
@@ -38,7 +38,7 @@ export class PhotoUploadComponent {
     try {
       await this.photoService.upload(file, this.missionId, planet.id, name);
 
-  this.photoUploaded.emit(); // <== nouvelle ligne
+  this.photoUploaded.emit(file);
       } catch (err: any) {
         console.error(err);
         alert('❌ Erreur upload : ' + err.message);

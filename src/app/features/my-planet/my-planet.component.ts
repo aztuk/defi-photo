@@ -6,6 +6,10 @@ import { PlanetService } from '../../core/services/planet.service';
 import { MissionService } from '../../core/services/mission.service';
 import { UserContextService } from '../../core/context/user-context.service';
 import { MissionProgress } from '../../core/interfaces/interfaces.models';
+import { ActivatedRoute } from '@angular/router';
+import { ThemeService } from '../../core/services/theme.service';
+import { PlanetContextService } from '../../core/context/planet-context.service';
+import { PhotoService } from '../../core/services/photo.service';
 
 @Component({
   selector: 'app-my-planet',
@@ -23,45 +27,59 @@ export class MyPlanetComponent implements OnInit {
   constructor(
     private planetService: PlanetService,
     private missionService: MissionService,
-    public user: UserContextService
+    private user: UserContextService,
+    private theme: ThemeService,
+    private route: ActivatedRoute,
+    private photoService: PhotoService,
+    private planetContext: PlanetContextService // 🆕
   ) {}
 
   async ngOnInit() {
     this.loading.set(true);
 
+    // ⏫ Récupération des données de base
     await Promise.all([
       this.planetService.revalidate(),
       this.missionService.revalidate(),
+    this.photoService.revalidate(true) // <-- AJOUT ici
     ]);
 
     const allPlanets = this.planetService.getAll();
     this.user.initFromPlanetsList(allPlanets);
 
+    // ⏳ Résolution de la planète cible
+    const planetId = this.route.snapshot.paramMap.get('planetId');
     const userPlanet = this.user.planet();
-    if (!userPlanet) {
-      console.error('[MyPlanet] Planète utilisateur introuvable.');
+
+    this.planetContext.initFromRoute(planetId, allPlanets, userPlanet);
+
+    const target = this.planetContext.currentPlanet();
+    const isReadonly = this.planetContext.readonly();
+
+    if (!target) {
+      console.error('[MyPlanet] Planète cible introuvable');
       return;
     }
 
+    // 🎨 Appliquer le thème à partir du nom
+    this.theme.setTheme(target.name);
+
+    // 📸 Récupération des missions pour cette planète
     const allProgressMap = await this.missionService.getAllMissionProgress();
-    const userProgress = allProgressMap.get(userPlanet.id) || [];
+    const planetProgress = allProgressMap.get(target.id) || [];
+    this.missionProgress.set(planetProgress);
 
-    this.missionProgress.set(userProgress);
-
-    const userScore = userProgress.filter(m => m.validated).length;
-    const allScores = Array.from(allProgressMap.values()).map(missions =>
-      missions.filter(m => m.validated).length
+    // 🏅 Calcul du rang
+    const planetScore = planetProgress.filter(m => m.validated).length;
+    const allScores = Array.from(allProgressMap.values()).map(
+      missions => missions.filter(m => m.validated).length
     );
-
     const sorted = [...allScores].sort((a, b) => b - a);
-    const rank = sorted.indexOf(userScore) + 1;
+    const rank = sorted.indexOf(planetScore) + 1;
 
     this.planetRank.set(rank);
     this.totalPlanets.set(allScores.length);
-    this.loading.set(false);
-  }
 
-  logout() {
-    this.user.logout();
+    this.loading.set(false);
   }
 }

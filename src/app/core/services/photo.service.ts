@@ -92,6 +92,53 @@ export class PhotoService {
     await this.revalidate(true);
   }
 
+async deletePhoto(photoId: string): Promise<boolean> {
+  // 🔍 Récupérer les infos de la photo avant suppression
+  const { data: toDelete, error: fetchError } = await this.supabase
+    .from('photos')
+    .select('planet_id, mission_id')
+    .eq('id', photoId)
+    .single();
+
+  if (fetchError || !toDelete) {
+    console.warn('[PhotoService] Erreur récupération photo :', fetchError?.message);
+    return false;
+  }
+
+  const { planet_id, mission_id } = toDelete;
+
+  // 🗑 Supprimer la photo
+  const { error: deleteError } = await this.supabase
+    .from('photos')
+    .delete()
+    .eq('id', photoId);
+
+  if (deleteError) {
+    console.warn('[PhotoService] Erreur suppression photo :', deleteError.message);
+    return false;
+  }
+
+  // 🔁 Revalider les photos après suppression
+  await this.revalidate(true);
+
+  // 🔄 Vérifie s'il reste des photos published pour la même mission/planète
+  const remaining = this.getByMissionAndPlanet(mission_id, planet_id).length;
+
+  if (remaining === 0) {
+    // 🔄 Met à jour planet_missions.validated = false
+    const { error: updateError } = await this.supabase
+      .from('planet_missions')
+      .update({ validated: false })
+      .match({ mission_id, planet_id });
+
+    if (updateError) {
+      console.warn('[PhotoService] Erreur update validated=false :', updateError.message);
+    }
+  }
+
+  console.log('[PhotoService] Photo supprimée :', photoId);
+  return true;
+}
 
 
 }

@@ -49,4 +49,5 @@ export interface SwipeCarouselItem {
   imageUrl: string;
   alt?: string;
   isAddButton?: boolean;
+  deletable?: boolean;
 }

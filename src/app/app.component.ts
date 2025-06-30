@@ -16,7 +16,8 @@ import { filter } from 'rxjs';
 export class AppComponent {
   currentUrl = signal('');
 
-  constructor(public router: Router, public theme: ThemeService) {
+  constructor(public router: Router, public theme: ThemeService,
+  private user: UserContextService) {
     // ✅ À la fin de chaque navigation, on met à jour l'URL courante
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
@@ -25,11 +26,12 @@ export class AppComponent {
       });
 
   }
-
-  ngOnInit(): void {
-    void this.theme;
+ngOnInit(): void {
+  if (this.user.isLoggedIn()) {
+    const name = this.user.planetName();
+    this.theme.setTheme(name);
   }
-
+}
 
   // ✅ computed pour que ça se mette à jour
   readonly shouldShowBottomNav = computed(() =>

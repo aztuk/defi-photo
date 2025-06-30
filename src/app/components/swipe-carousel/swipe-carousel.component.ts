@@ -5,6 +5,7 @@ import {
 import { SwipeCarouselItem } from '../../core/interfaces/interfaces.models';
 import { CommonModule } from '@angular/common';
 import { PhotoUploadComponent } from "../photo-upload/photo-upload.component";
+import { PlanetContextService } from '../../core/context/planet-context.service';
 
 @Component({
   selector: 'app-swipe-carousel',
@@ -24,30 +25,38 @@ export class SwipeCarouselComponent implements AfterViewInit {
 
   @Output() itemSelected = new EventEmitter<SwipeCarouselItem>();
   @Output() selectAdd = new EventEmitter<void>();
-  @Output() photoUploaded  = new EventEmitter<void>();
+  @Output() photoUploaded  = new EventEmitter<File>();
+  @Output() deletePhoto = new EventEmitter<string>();
+
 
 
   currentIndex = signal(0);
-
   itemWidth = 0;
+readonly: boolean;
+
   private container?: HTMLElement;
   private startX = 0;
   private deltaX = 0;
   private dragging = false;
 
+  constructor(private context: PlanetContextService) {
+    this.readonly = this.context.readonly();
+  }
+
   ngAfterViewInit() {
-    this.container = this.containerRef?.nativeElement ?? undefined;
+  this.container = this.containerRef?.nativeElement ?? undefined;
+  const wrapper = this.wrapperRef?.nativeElement;
+  this.itemWidth = wrapper?.offsetWidth || 300;
 
-    const wrapper = this.wrapperRef?.nativeElement;
-    this.itemWidth = wrapper?.offsetWidth || 300;
+  const track = this.container;
 
-    if (wrapper) {
-      wrapper.addEventListener('pointerdown', this.onPointerDown.bind(this));
-      wrapper.addEventListener('pointermove', this.onPointerMove.bind(this), { passive: false });
-      wrapper.addEventListener('pointerup', this.onPointerUp.bind(this));
-    }
+  if (track) {
+    track.addEventListener('pointerdown', this.onPointerDown.bind(this));
+    track.addEventListener('pointermove', this.onPointerMove.bind(this), { passive: false });
+    track.addEventListener('pointerup', this.onPointerUp.bind(this));
+  }
 
-    setTimeout(() => this.scrollTo(this.selectedIndex), 0);
+  setTimeout(() => this.scrollTo(this.selectedIndex), 0);
   }
 
 scrollTo(index: number) {
@@ -78,6 +87,14 @@ scrollTo(index: number) {
       this.itemSelected.emit(item);
     } else {
       this.scrollTo(index);
+    }
+  }
+
+  onDeletePhoto(photoId: string) {
+    if (this.readonly) return;
+    const confirmDelete = confirm('Supprimer cette photo ?');
+    if (confirmDelete) {
+      this.deletePhoto.emit(photoId);
     }
   }
 
@@ -122,7 +139,7 @@ onPointerUp(event: PointerEvent) {
   this.container?.releasePointerCapture(event.pointerId);
 }
 
-  onPhotoUploaded() {
-    this.photoUploaded.emit();
+  onPhotoUploaded(file: File) {
+    this.photoUploaded.emit(file);
   }
 }

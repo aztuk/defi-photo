@@ -26,6 +26,12 @@ export const appRoutes: Routes = [
     loadComponent: () => import('./features/my-planet/my-planet.component').then(m => m.MyPlanetComponent),
   },
   {
+  path: 'planet/:planetId/view',
+  canActivate: [authGuard],
+  loadComponent: () => import('./features/my-planet/my-planet.component').then(m => m.MyPlanetComponent),
+},
+
+  {
     path: 'gallery',
     canActivate: [authGuard],
     loadComponent: () => import('./features/gallery/gallery.component').then(m => m.GalleryComponent),

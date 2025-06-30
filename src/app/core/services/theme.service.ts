@@ -6,19 +6,17 @@ import { UserContextService } from '../context/user-context.service';
 export class ThemeService {
   private readonly user = inject(UserContextService);
 
-  constructor() {
-      effect(() => {
-        const rawName = this.user.planetNameSignal();
-        const name = rawName?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') ?? null;
+  /**
+   * Applique un thème CSS sur le <body> selon le nom de la planète
+   */
+  setTheme(planetName: string | null) {
+    const name = planetName?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') ?? 'mercure';
 
-        // Supprime toutes les classes "planet-*"
-        document.body.classList.forEach(cls => {
-          if (cls.startsWith('planet-')) document.body.classList.remove(cls);
-        });
+    document.body.classList.forEach(cls => {
+      if (cls.startsWith('planet-')) document.body.classList.remove(cls);
+    });
 
-        // Ajoute une classe même si aucun nom
-        document.body.classList.add(`planet-${name ?? 'mercure'}`);
-      });
-
+    document.body.classList.add(`planet-${name}`);
   }
+
 }

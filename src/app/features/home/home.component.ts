@@ -7,6 +7,7 @@ import { ScrollHeaderComponent } from "../../components/scroll-header/scroll-hea
 import { PlanetAvatarComponent } from "../../components/planet-avatar/planet-avatar.component";
 import { UserContextService } from '../../core/context/user-context.service';
 import { ProgressComponent } from '../../components/progress/progress.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -21,12 +22,37 @@ export class HomeComponent implements OnInit {
 
   readonly userPlanet = computed(() => this.userContext.planet());
   readonly userName = computed(() => this.userContext.userName());
+  readonly userRank = computed(() => this.getUserRank());
 
   constructor(
     private planetService: PlanetService,
     private missionService: MissionService,
-    private userContext: UserContextService
+    private userContext: UserContextService,
+  private router: Router
   ) {}
+
+isUserPlanet(planetName: string): boolean {
+  return planetName.toLowerCase() === this.userPlanet()?.name.toLowerCase();
+}
+
+getUserRank(): number | null {
+  const list = this.planetsProgress();
+  const planetName = this.userPlanet()?.name.toLowerCase();
+  const index = list.findIndex(p => p.name.toLowerCase() === planetName);
+  return index >= 0 ? index + 1 : null;
+}
+
+onPlanetClick(planet: PlanetWithMissionsProgress) {
+  const userPlanetId = this.userPlanet()?.id;
+  const targetPlanetId = planet.id;
+
+  if (targetPlanetId === userPlanetId) {
+    this.router.navigate(['/planet', targetPlanetId]);
+  } else {
+    this.router.navigate(['/planet', targetPlanetId, 'view']);
+  }
+}
+
 
   async ngOnInit() {
     this.loading.set(true);

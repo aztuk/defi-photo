@@ -1,24 +1,17 @@
 <nav class="bottom-nav">
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-        <div class="icon-wrapper">
-            <i class="fa-solid fa-house"></i>
-        </div><span>Accueil</span>
+    <a routerLink="/" [class.active]="isHomeActive()">
+        <i class="fa-solid fa-trophy"></i> Classement
     </a>
 
-    <a [routerLink]="planetLink()" routerLinkActive="active">
-        <div class="icon-wrapper">
-            <i class="fa-solid fa-earth"></i>
-        </div><span>Ma planète</span>
+    <a [routerLink]="planetLink()" [class.active]="isPlanetActive()">
+        <i class="fa-solid fa-globe"></i> Planète
     </a>
 
-    <a routerLink="/gallery" routerLinkActive="active">
-        <div class="icon-wrapper"><i class="fa-solid fa-images"></i></div><span>Galerie</span>
+    <a routerLink="/gallery" [class.active]="isGalleryActive()">
+        <i class="fa-solid fa-image"></i> Galerie
     </a>
 
-    <a routerLink="/history" routerLinkActive="active">
-        <div class="icon-wrapper"><i class="fa-solid fa-clock"></i></div><span>Historique</span>
-    </a>
     <a (click)="logout()">
-        <div class="icon-wrapper"><i class="fa-solid fa-clock"></i></div><span>Logout</span>
+        <i class="fa-solid fa-right-from-bracket"></i> Quitter
     </a>
 </nav>
