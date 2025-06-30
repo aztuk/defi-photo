@@ -61,9 +61,6 @@ export class MyPlanetComponent implements OnInit {
       return;
     }
 
-    // 🎨 Appliquer le thème à partir du nom
-    this.theme.setTheme(target.name);
-
     // 📸 Récupération des missions pour cette planète
     const allProgressMap = await this.missionService.getAllMissionProgress();
     const planetProgress = allProgressMap.get(target.id) || [];

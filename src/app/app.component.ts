@@ -16,21 +16,21 @@ import { filter } from 'rxjs';
 export class AppComponent {
   currentUrl = signal('');
 
-  constructor(public router: Router, public theme: ThemeService,
-  private user: UserContextService) {
-    // ✅ À la fin de chaque navigation, on met à jour l'URL courante
-    this.router.events
-      .pipe(filter(e => e instanceof NavigationEnd))
-      .subscribe(e => {
-        this.currentUrl.set((e as NavigationEnd).urlAfterRedirects);
-      });
+// app.component.ts
+constructor(
+  public router: Router,
+  public theme: ThemeService,
+  private user: UserContextService
+) {
+  this.router.events
+    .pipe(filter(e => e instanceof NavigationEnd))
+    .subscribe(() => {
+      this.theme.initGlobalTheme(); // <-- ici
+      this.currentUrl.set(this.router.url);
+    });
+}
 
-  }
 ngOnInit(): void {
-  if (this.user.isLoggedIn()) {
-    const name = this.user.planetName();
-    this.theme.setTheme(name);
-  }
 }
 
   // ✅ computed pour que ça se mette à jour
