@@ -1,3 +1,57 @@
+@use 'variables' as *;
 @mixin applyShadow($color) {
-    box-shadow: 0 1px 3px $color, 0 2px 5px $color, 0 3px 8px $color, 0 5px 13px $color, 0 8px 21px $color, 0 13px 54px $color;
+    $opacity: 1;
+    box-shadow: 0 1px 3px rgba($color, $opacity), 0 2px 5px rgba($color, $opacity), 0 3px 8px rgba($color, $opacity), 0 5px 13px rgba($color, $opacity), 0 8px 21px rgba($color, $opacity), 0 13px 54px rgba($color, $opacity);
+}
+
+@mixin shrinkableHeader() {
+    filter: drop-shadow(0 0 2px black);
+    flex: 1;
+    .title {
+        font-size: calc(13px + 3px * var(--shrink));
+        color: var(--text-muted);
+        font-family: $font-base;
+        font-weight: 400;
+        transition: font-size 0.3s ease;
+    }
+    .subtitle {
+        font-size: calc(32px + 32px * var(--shrink));
+        font-family: $font-head;
+        font-weight: 100;
+        line-height: 1.2;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: font-size 0.3s ease;
+    }
+}
+
+@mixin addBackground() {
+    min-height: 100vh;
+    line-height: 1.7;
+    box-sizing: border-box;
+    &::after {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        content: "";
+        background: var(--background);
+        opacity: 1;
+        z-index: -1;
+    }
+    &::before {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        content: "";
+        background: url('/assets/ui/background.png') no-repeat;
+        opacity: .5;
+        z-index: -1;
+        filter: hue-rotate(var(--hue));
+    }
 }

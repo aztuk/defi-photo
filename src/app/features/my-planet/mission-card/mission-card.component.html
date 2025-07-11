@@ -1,10 +1,13 @@
-<div class="mission" [class.validated]="mission.validated">
-    <div *ngIf="!mission.validated" class="nb">Défi {{nb + 1}}</div>
-    <div *ngIf="mission.validated" class="nb">✔ Défi {{nb + 1}} terminé!</div>
+<!-- features/my-planet/mission-card/mission-card.component.html -->
+<a class="mission" [class.validated]="mission.validated" [routerLink]="routerLink">
+
     <div class="text-wrapper">
         <div class="name">{{ mission.name }}</div>
-        <div class="description">{{ mission.description }}</div>
-        <app-swipe-carousel [items]="carouselItems()" [missionId]="mission.id" (itemSelected)="onPhotoClick($event)" (photoUploaded)="onPhotoUploaded($event)" (deletePhoto)="onPhotoDelete($event)" />
+        <div class="description" *ngIf="!mission.validated">{{ mission.description }}</div>
+        <div class="description" *ngIf="mission.validated">{{ photosCount }} photo{{ photosCount > 1 ? 's' : '' }}</div>
     </div>
-
-</div>
+    <div class="icon-wrapper">
+        <i *ngIf="!mission.validated" class="fa-solid fa-chevron-right"></i>
+        <span *ngIf="mission.validated" class="nb">✔</span>
+    </div>
+</a>

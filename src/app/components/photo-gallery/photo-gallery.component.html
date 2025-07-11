@@ -1,0 +1,7 @@
+<div class="gallery">
+    <div *ngFor="let photo of photos" class="photo" (click)="onClick(photo)">
+        <img [src]="photo.url" [alt]="photo.id" />
+        <button *ngIf="canEdit" class="delete" (click)="onDelete(photo, $event)">✕</button>
+    </div>
+</div>
+<div *ngIf="photos.length === 0" class="empty">Aucune photo. Soyez le premier à en ajouter une !</div>

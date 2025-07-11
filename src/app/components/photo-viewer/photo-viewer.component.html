@@ -1,0 +1,13 @@
+<div class="viewer">
+    <div class="scroller" #scroller>
+        <div class="slide" *ngFor="let photo of photos">
+            <img [src]="photo.url" />
+        </div>
+    </div>
+
+    <div class="actions">
+        <button *ngIf="canEdit" (click)="onDelete()"><i class="fa-solid fa-trash"></i> Supprimer</button>
+        <button (click)="onDownload()"><i class="fa-solid fa-download"></i> Télécharger</button>
+        <button (click)="close.emit()" class="round"><i class="fa-solid fa-xmark"></i> </button>
+    </div>
+</div>

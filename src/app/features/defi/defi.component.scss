@@ -1,0 +1,41 @@
+@use '../../../assets/styles/variables' as *;
+@use '../../../assets/styles/mixins' as *;
+:host {
+    min-height: 100vh;
+    padding-bottom: 80px;
+    @include addBackground();
+}
+
+.identity {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 8px;
+    color: var(--text);
+    padding: 24px;
+}
+
+.back {
+    color: var(--text-muted);
+}
+
+.title {
+    font-size: calc(13px + 3px * var(--shrink));
+    color: var(--text-muted);
+    font-family: $font-base;
+    font-weight: 400;
+    transition: font-size 0.3s ease;
+}
+
+.subtitle {
+    font-size: calc(16px + 16px * var(--shrink));
+    font-family: $font-head;
+    font-weight: 100;
+    line-height: 1;
+    color: var(--text);
+    transition: font-size 0.3s ease;
+}
+
+.grid {
+    padding: 24px;
+}

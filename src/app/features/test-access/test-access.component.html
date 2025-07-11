@@ -1,0 +1,11 @@
+<h2>Tests de scénarios Login</h2>
+
+<ul>
+    <li><button (click)="simulateScenario(1)">1. Déjà logué (session OK)</button></li>
+    <li><button (click)="simulateScenario(2)">2. Pas logué, planète dans URL</button></li>
+    <li><button (click)="simulateScenario(3)">3. Pas logué, pas de planète (accès direct)</button></li>
+    <li><button (click)="simulateScenario(4)">4. LocalStorage corrompu</button></li>
+    <li><button (click)="simulateScenario(5)">5. Planète introuvable → fallback</button></li>
+    <li><button (click)="simulateScenario(6)">6. Planète ≠ celle du user</button></li>
+    <li><button (click)="simulateScenario(7)">7. Forcer déconnexion</button></li>
+</ul>

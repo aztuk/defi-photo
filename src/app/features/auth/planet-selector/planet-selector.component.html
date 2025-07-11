@@ -1,0 +1,12 @@
+<section>
+    <div class="main-title">
+        Quelle est ta table?
+    </div>
+</section>
+
+<div class="grid">
+    <button *ngFor="let p of planets" (click)="onSelect(p)">
+      <app-planet-avatar [planet]="p" />
+      <span>{{ p.name }}</span>
+    </button>
+</div>

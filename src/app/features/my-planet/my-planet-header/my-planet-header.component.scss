@@ -20,7 +20,7 @@
                 font-size: calc(32px + 32px * var(--shrink));
                 font-family: $font-head;
                 font-weight: 100;
-                line-height: 1.2;
+                line-height: 1;
                 color: var(--text);
                 white-space: nowrap;
                 overflow: hidden;
@@ -29,7 +29,7 @@
             }
         }
         .planet-wrapper {
-            width: calc(40px + 60px * var(--shrink));
+            width: calc(64px + 60px * var(--shrink));
             transition: width 0.3s ease;
             filter: drop-shadow(0 0 64px var(--glow));
         }
@@ -45,6 +45,7 @@
             justify-content: space-between;
             font-size: 13px;
             opacity: calc(var(--shrink));
+            height: calc(16px * var(--shrink));
             transition: opacity 0.3s ease;
             .completed-missions-text {
                 color: var(--text);

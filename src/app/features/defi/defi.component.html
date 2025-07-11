@@ -1,0 +1,14 @@
+<!-- features/defi/defi.component.html -->
+
+
+<app-scroll-header class="header">
+    <div class="identity">
+        <button class="back" (click)="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="subtitle"> {{ missionName }}</div>
+        <div class="title">{{ missionDescription }}</div>
+    </div>
+</app-scroll-header>
+<div class="grid">
+    <app-photo-gallery [photos]="photos()" (photoClick)="open($event)" (deletePhoto)="onDelete($event)"></app-photo-gallery>
+</div>
+<app-photo-viewer *ngIf="selected()" [photos]="photos()" [index]="getSelectedIndex()" [canEdit]="canEdit" (close)="close()" (delete)="onDelete($event)" (download)="onDownload($event)" />

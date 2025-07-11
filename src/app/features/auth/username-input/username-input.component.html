@@ -1,0 +1,10 @@
+<form (submit)="onSubmit()">
+    <section>
+        <div class="main-title">
+            Ton prénom</div>
+
+
+        <input #inputRef [(ngModel)]="name" name="name" type="text" required />
+    </section>
+    <button class="primary" type="submit" [disabled]="isDisabled()">Continuer</button>
+</form>

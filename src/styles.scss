@@ -10,13 +10,13 @@
 $progress in pc.$planet-progress-colors {
     $progress-dark: color.scale($progress, $lightness: -15%, $saturation: +20%);
     $bg-carousel: color.scale($progress, $lightness: -95%, $saturation: -40%);
-    $bg: rgba(color.scale($bg-carousel, $lightness: +10%), .2);
+    $bg: rgba(color.scale($bg-carousel, $lightness: -10%), 1);
     $bg-header: rgba(color.scale($bg-carousel, $lightness: +15%), .2);
-    $bg-mission: color.scale($progress, $lightness: -92%, $saturation: -45%);
-    $border: color.scale($progress, $lightness: -60%, $saturation: -80%);
+    $bg-mission: color.scale($progress, $lightness: -82%, $saturation: -75%);
+    $border: color.scale($bg, $lightness: -60%, $saturation: -80%);
     $text: color.scale($progress, $lightness: +90%);
     $text-muted: color.scale($text, $saturation: -70%, $lightness: -35%);
-    $glow: rgba(color.scale($progress, $lightness: +20%), 0.3);
+    $glow: rgba(color.scale($progress, $lightness: +20%), 0.2);
     body.planet-#{$planet} {
         --progress: #{$progress};
         --progress-dark: #{$progress-dark};
@@ -55,7 +55,7 @@ body.planet-jupiter {
 }
 
 body.planet-saturne {
-    --hue: 5deg;
+    --hue: -148deg;
 }
 
 body.planet-uranus {
@@ -68,4 +68,34 @@ body.planet-neptune {
 
 body.planet-pluton {
     --hue: 175deg;
+}
+
+.main-title {
+    padding: 32px;
+    font-size: 32px;
+    font-family: $font-head;
+    text-align: center;
+    font-weight: 100;
+    line-height: 1.2;
+    color: var(--text);
+    transition: font-size 0.3s ease;
+}
+
+.highlight {
+    color: var(--progress);
+}
+
+button {
+    background: none;
+    border: none;
+    border-radius: 4px;
+    height: 56px;
+    font-size: 18px;
+    font-weight: bold;
+    &.primary {
+        background: $global-success-text;
+    }
+    &.danger {
+        background: $global-danger-text;
+    }
 }

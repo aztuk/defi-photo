@@ -1,42 +1,79 @@
+/* features/my-planet/mission-card/mission-card.component.scss */
+
 @use '../../../../assets/styles/variables' as *;
+@use '../../../../assets/styles/mixins' as *;
 .mission {
     display: flex;
-    flex-direction: column;
-    padding: 24px;
-    background: var(--background-mission);
-    border-top: 1px solid var(--border-mission);
-    gap: 8px;
-    .nb {
-        color: var(--text-muted);
-        font-weight: 700;
-        font-size: 13px;
-    }
+    align-items: center;
+    justify-content: center;
+    //background: var(--background-mission);
+    border: 1px solid var(--background-mission);
+    transition: border 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+    color: var(--text);
+    cursor: pointer;
+    gap: 20px;
+    padding: 32px 16px;
+    border-radius: 8px;
+    @include applyShadow(black);
     .text-wrapper {
         display: flex;
         flex-direction: column;
-        gap: 8px;
         flex: 1;
-        width: 100%;
-        .name {
-            color: var(--text);
-            font-family: $font-head;
-            font-size: 28px;
-        }
-        .description {
-            color: var(--text-muted);
-            font-size: 16px;
-            font-weight: 300;
-            line-height: 1.5;
-            margin-bottom: 32px;
+    }
+    .icon-wrapper {
+        padding-right: 16px;
+    }
+    .thumbnail {
+        aspect-ratio: 3 / 2;
+        border-radius: 6px;
+        overflow: hidden;
+        max-width: 100px;
+        img {
+            width: 100%;
+            object-fit: cover;
         }
     }
-    transition: border 0.3s,
-    box-shadow 0.3s;
+    .name {
+        color: var(--text);
+        font-family: $font-head;
+        font-size: 22px;
+        flex: 1;
+    }
+    .description {
+        color: var(--text-muted);
+        font-size: 14px;
+        font-weight: 100;
+        line-height: 1.5;
+        /*
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;*/
+        opacity: .5;
+    }
     &.validated {
         position: relative;
         background: $global-success-bg;
+        border: 1px solid $global-success-text;
+        .name,
         .nb {
             color: $global-success-text;
         }
+        .description {
+            opacity: 1;
+        }
     }
+}
+
+.primary-button {
+    background: var(--progress);
+    border-radius: 4px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-family: $font-head;
+    font-size: 16px;
+    margin-top: 12px;
 }
