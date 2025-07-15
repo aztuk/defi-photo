@@ -5,11 +5,12 @@ import { UserContextService } from './core/context/user-context.service';
 import { BottomNavComponent } from "./components/bottom-nav/bottom-nav.component";
 import { ThemeService } from './core/services/theme.service';
 import { filter } from 'rxjs';
+import { NotificationComponent } from './components/notification/notification.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, BottomNavComponent, CommonModule],
+  imports: [RouterOutlet, BottomNavComponent, CommonModule, NotificationComponent],
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"]
 })

@@ -1,18 +1,16 @@
 // base value
 $rem: 15px;
+$border-color: black;
 // Theme layout
-$background-elevation-400: #fff;
-$background-elevation-300: #fcfcfc;
-$background-elevation-200: #f4f4f5;
-$border-color: #00000026;
 $text-color: rgb(13, 13, 13);
 $text-color-muted-soft: rgb(44, 44, 44);
-$text-color-muted-hard: rgb(82, 82, 82);
+$text-color-muted-hard: rgb(212, 215, 222);
 $text-color-warning: #da7e16;
 $text-color-danger: #b62121;
+$global-primary-color: #78b7ff;
 $global-success-bg: rgba(19, 255, 157, 0.1); // --background-success
 $global-success-text: #55f3b1; // --text-success
-$global-danger-text: #f35555; // --text-success
+$global-danger-text: #9e1919; // --text-success
 // font
 $font-base: "Cabin",
 sans-serif;

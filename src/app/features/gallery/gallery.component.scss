@@ -1,0 +1,14 @@
+@use '../../../assets/styles/variables' as *;
+@use '../../../assets/styles/mixins' as *;
+:host {
+    padding-top: 80px;
+    @include addBackground();
+}
+
+.identity {
+    padding: 0 24px 24px;
+}
+
+.grid {
+    padding: 8px;
+}

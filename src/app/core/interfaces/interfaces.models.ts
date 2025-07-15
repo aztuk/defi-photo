@@ -35,8 +35,8 @@ export interface UserIdentity {
 
 export interface Photo {
   id: string;
-  mission_id: string;
-  planet_id: string;
+  mission_id: string | null;
+  planet_id: string | null;
   user_name: string;
   url: string;
   status: 'published' | 'pending' | 'rejected';

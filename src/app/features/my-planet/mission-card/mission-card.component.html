@@ -1,5 +1,11 @@
 <!-- features/my-planet/mission-card/mission-card.component.html -->
 <a class="mission" [class.validated]="mission.validated" [routerLink]="routerLink">
+    <div class="icon-wrapper" *ngIf="mission.validated">
+        <span class="checkmark">
+          <i class="fa-solid fa-check"></i>
+        </span>
+
+    </div>
 
     <div class="text-wrapper">
         <div class="name">{{ mission.name }}</div>
@@ -8,6 +14,5 @@
     </div>
     <div class="icon-wrapper">
         <i *ngIf="!mission.validated" class="fa-solid fa-chevron-right"></i>
-        <span *ngIf="mission.validated" class="nb">✔</span>
     </div>
 </a>

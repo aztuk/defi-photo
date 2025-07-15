@@ -24,7 +24,6 @@ export class PhotoViewerComponent implements AfterViewInit {
 
   @Output() close = new EventEmitter<void>();
   @Output() delete = new EventEmitter<Photo>();
-  @Output() download = new EventEmitter<Photo>();
 
   @ViewChild('scroller') scrollerRef!: ElementRef<HTMLDivElement>;
 
@@ -45,9 +44,23 @@ export class PhotoViewerComponent implements AfterViewInit {
     this.delete.emit(this.currentPhoto);
   }
 
-  onDownload() {
-    this.download.emit(this.currentPhoto);
+async onDownload() {
+  try {
+    const response = await fetch(this.currentPhoto.url);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'photo.jpg';
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('[PhotoViewer] Erreur téléchargement :', error);
+    alert('Impossible de télécharger cette photo.');
   }
+}
 
   ngAfterViewInit(): void {
     const el = this.scrollerRef?.nativeElement;

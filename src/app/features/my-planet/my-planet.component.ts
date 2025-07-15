@@ -10,6 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ThemeService } from '../../core/services/theme.service';
 import { PlanetContextService } from '../../core/context/planet-context.service';
 import { PhotoService } from '../../core/services/photo.service';
+import { DebugAuditService } from '../../core/services/debug-audit.service';
 
 @Component({
   selector: 'app-my-planet',
@@ -31,7 +32,8 @@ export class MyPlanetComponent implements OnInit {
     private theme: ThemeService,
     private route: ActivatedRoute,
     private photoService: PhotoService,
-    private planetContext: PlanetContextService // 🆕
+    private planetContext: PlanetContextService, // 🆕
+    private debugAudit: DebugAuditService
   ) {}
 
   async ngOnInit() {
@@ -44,15 +46,7 @@ export class MyPlanetComponent implements OnInit {
     this.photoService.revalidate(true) // <-- AJOUT ici
     ]);
 
-    const allPlanets = this.planetService.getAll();
-    this.user.initFromPlanetsList(allPlanets);
-
     // ⏳ Résolution de la planète cible
-    const planetId = this.route.snapshot.paramMap.get('planetId');
-    const userPlanet = this.user.planet();
-
-    this.planetContext.initFromRoute(planetId, allPlanets, userPlanet);
-
     const target = this.planetContext.currentPlanet();
     const isReadonly = this.planetContext.readonly();
 
@@ -78,5 +72,6 @@ export class MyPlanetComponent implements OnInit {
     this.totalPlanets.set(allScores.length);
 
     this.loading.set(false);
+
   }
 }

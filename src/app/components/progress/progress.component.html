@@ -1,3 +1,5 @@
 <div class="bar-bg" [ngClass]="planetName ? 'planet-' + planetName.toLowerCase() : ''">
-    <div class="bar-fill" [style.width.%]="value"></div>
+    <div class="bar-fill" [style.width.%]="value">
+        <ng-content></ng-content>
+    </div>
 </div>

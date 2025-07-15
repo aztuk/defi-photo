@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { supabase } from './supabase.client';
 import { Photo } from '../interfaces/interfaces.models';
+import { NotificationService } from './notification.service';
 
 @Injectable({ providedIn: 'root' })
 export class PhotoService {
@@ -15,7 +16,7 @@ export class PhotoService {
   private lastFetched: number = 0;
   private readonly TTL = 1000 * 60 * 2; // 2 minutes
 
-  constructor() {
+  constructor(private notificationService: NotificationService) {
     this.revalidate();
   }
 
@@ -51,9 +52,9 @@ export class PhotoService {
     return this.photos().filter(p => p.mission_id === missionId && p.planet_id === planetId);
   }
 
-  async upload(file: File, missionId: string, planetId: string, userName: string) {
+  async upload(file: File, missionId: string | null, planetId: string | null, userName: string) {
     const extension = file.name.split('.').pop();
-    const path = `${planetId}/${missionId}/${Date.now()}.${extension}`;
+    const path = `${planetId || 'gallery'}/${missionId || 'user-photos'}/${Date.now()}.${extension}`;
 
     const { error: uploadError } = await this.supabase
       .storage
@@ -83,62 +84,58 @@ export class PhotoService {
       throw insertError;
     }
 
-    // ✅ Met à jour la mission comme validée dans planet_missions
-    await this.supabase
-      .from('planet_missions')
-      .update({ validated: true })
-      .match({ mission_id: missionId, planet_id: planetId });
+    if (missionId && planetId) {
+      // ✅ Met à jour la mission comme validée dans planet_missions
+      await this.supabase
+        .from('planet_missions')
+        .update({ validated: true })
+        .match({ mission_id: missionId, planet_id: planetId });
+    }
 
     await this.revalidate(true);
+    this.notificationService.show('Photo uploadée avec succès !');
   }
 
-async deletePhoto(photoId: string): Promise<boolean> {
-  // 🔍 Récupérer les infos de la photo avant suppression
-  const { data: toDelete, error: fetchError } = await this.supabase
-    .from('photos')
-    .select('planet_id, mission_id')
-    .eq('id', photoId)
-    .single();
-
-  if (fetchError || !toDelete) {
-    console.warn('[PhotoService] Erreur récupération photo :', fetchError?.message);
-    return false;
-  }
-
-  const { planet_id, mission_id } = toDelete;
-
-  // 🗑 Supprimer la photo
-  const { error: deleteError } = await this.supabase
-    .from('photos')
-    .delete()
-    .eq('id', photoId);
-
-  if (deleteError) {
-    console.warn('[PhotoService] Erreur suppression photo :', deleteError.message);
-    return false;
-  }
-
-  // 🔁 Revalider les photos après suppression
-  await this.revalidate(true);
-
-  // 🔄 Vérifie s'il reste des photos published pour la même mission/planète
-  const remaining = this.getByMissionAndPlanet(mission_id, planet_id).length;
-
-  if (remaining === 0) {
-    // 🔄 Met à jour planet_missions.validated = false
-    const { error: updateError } = await this.supabase
-      .from('planet_missions')
-      .update({ validated: false })
-      .match({ mission_id, planet_id });
-
-    if (updateError) {
-      console.warn('[PhotoService] Erreur update validated=false :', updateError.message);
+  async deletePhoto(photo: Photo, currentUserName: string | null): Promise<boolean> {
+    if (photo.user_name !== currentUserName) {
+      console.warn('[PhotoService] Tentative de suppression non autorisée.');
+      return false;
     }
-  }
 
-  console.log('[PhotoService] Photo supprimée :', photoId);
-  return true;
-}
+    // 🗑 Supprimer la photo
+    const { error: deleteError } = await this.supabase
+      .from('photos')
+      .delete()
+      .eq('id', photo.id);
+
+    if (deleteError) {
+      console.warn('[PhotoService] Erreur suppression photo :', deleteError.message);
+      return false;
+    }
+
+    // 🔁 Revalider les photos après suppression
+    await this.revalidate(true);
+
+    if (photo.mission_id && photo.planet_id) {
+      // 🔄 Vérifie s'il reste des photos published pour la même mission/planète
+      const remaining = this.getByMissionAndPlanet(photo.mission_id, photo.planet_id).length;
+
+      if (remaining === 0) {
+        // 🔄 Met à jour planet_missions.validated = false
+        const { error: updateError } = await this.supabase
+          .from('planet_missions')
+          .update({ validated: false })
+          .match({ mission_id: photo.mission_id, planet_id: photo.planet_id });
+
+        if (updateError) {
+          console.warn('[PhotoService] Erreur update validated=false :', updateError.message);
+        }
+      }
+    }
+
+      this.notificationService.show('Photo supprimée avec succès !');
+      return true;
+    }
 
 
 }

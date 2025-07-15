@@ -8,16 +8,17 @@ export const LOCAL_STORAGE_KEY = 'defi-photo-user';
 export class UserContextService {
   private readonly _identity = signal<UserIdentity | null>(null);
   private readonly _allPlanets = signal<Planet[]>([]);
-  private readonly _planet = signal<Planet | null>(null);
   private readonly _temporaryPlanetName = signal<string | null>(null);
 
   readonly isLoggedIn = computed(() => !!this._identity());
   readonly userName = computed(() => this._identity()?.name ?? null);
-  readonly planetName = computed(() =>
-    this._temporaryPlanetName() ?? this._identity()?.planet ?? null
-  );
-  readonly planet = computed(() => this._planet());
-  readonly planetId = computed(() => this._planet()?.id ?? null);
+  readonly planetName = computed(() => this._identity()?.planet ?? null);
+  readonly planet = computed(() => {
+    const planetName = this.planetName();
+    if (!planetName) return null;
+    return this._allPlanets().find(p => p.name.toLowerCase() === planetName.toLowerCase()) ?? null;
+  });
+  readonly planetId = computed(() => this.planet()?.id ?? null);
 
   constructor() {
     // Lecture du localStorage au démarrage
@@ -29,17 +30,6 @@ export class UserContextService {
       if (identity) {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(identity));
       }
-    });
-
-    // Effet pour sélectionner la planète active dès que l'identité ou la liste des planètes change
-    effect(() => {
-      const identity = this._identity();
-      const planets = this._allPlanets();
-      if (!identity || planets.length === 0) {
-        this._planet.set(null);
-        return;
-      }
-      this.selectPlanet(identity.planet, planets);
     });
   }
 
@@ -63,7 +53,6 @@ export class UserContextService {
    */
   logout() {
     this._identity.set(null);
-    this._planet.set(null);
     this._temporaryPlanetName.set(null);
     localStorage.removeItem(LOCAL_STORAGE_KEY);
   }
@@ -90,21 +79,4 @@ export class UserContextService {
     this._allPlanets.set(planets);
   }
 
-  /**
-   * Sélectionne et met à jour la planète active.
-   */
-  private selectPlanet(planetName: string, planets: Planet[]) {
-    let match = planets.find(p => p.name.toLowerCase() === planetName.toLowerCase());
-
-    if (!match) {
-      console.warn(`[UserContext] Planète "${planetName}" non trouvée, fallback sur Mercure.`);
-      match = planets.find(p => p.name.toLowerCase() === 'mercure');
-    }
-
-    if (!match) {
-      console.error('[UserContext] Aucune planète valide disponible (Mercure manquante)');
-    }
-
-    this._planet.set(match ?? null);
-  }
 }

@@ -11,11 +11,13 @@ import { PhotoViewerComponent } from '../../components/photo-viewer/photo-viewer
 import { PlanetService } from '../../core/services/planet.service';
 import { UserContextService } from '../../core/context/user-context.service';
 import { ScrollHeaderComponent } from "../../components/scroll-header/scroll-header.component";
+import { DebugAuditService } from '../../core/services/debug-audit.service';
+import { PhotoUploadComponent } from '../../components/photo-upload/photo-upload.component';
 
 @Component({
   selector: 'app-defi',
   standalone: true,
-  imports: [CommonModule, PhotoGalleryComponent, PhotoViewerComponent, ScrollHeaderComponent],
+  imports: [CommonModule, PhotoGalleryComponent, PhotoViewerComponent, PhotoUploadComponent],
   templateUrl: './defi.component.html',
   styleUrls: ['./defi.component.scss']
 })
@@ -26,6 +28,7 @@ export class DefiComponent implements OnInit {
   missionName = '';
   missionDescription = '';
   validated = false;
+  planetId = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -35,16 +38,18 @@ export class DefiComponent implements OnInit {
     private planetContext: PlanetContextService,
     private planetService: PlanetService,
     private userContext: UserContextService
-  ) {}
+  ) {
+
+  }
+
 
 goBack() {
   const planet = this.planetContext.currentPlanet();
   if (planet) {
     this.router.navigate(['/planet', planet.id]);
-  } else {
-    this.router.navigate(['/home']); // fallback
   }
 }
+
 
 getSelectedIndex(): number {
   const current = this.selected();
@@ -52,44 +57,25 @@ getSelectedIndex(): number {
 }
 
   async ngOnInit() {
-    this.missionId = this.route.snapshot.paramMap.get('id')!;
-    await this.ensurePlanetContext();
-    const planet = this.planetContext.currentPlanet();
-    if (!planet) return;
+  this.missionId = this.route.snapshot.paramMap.get('id')!;
 
-    await this.photoService.revalidate();
-    const photos = this.photoService.getByMissionAndPlanet(this.missionId, planet.id);
-    this.photos.set(photos);
+  const planet = this.planetContext.currentPlanet();
+  if (!planet) return;
 
-    const allProgress = await this.missionService.getAllMissionProgress();
-    const list = allProgress.get(planet.id) || [];
-    const mission = list.find(m => m.id === this.missionId);
-    if (mission) {
-      this.missionName = mission.name;
-      this.missionDescription = mission.description;
-      this.validated = mission.validated;
-    }
+  await this.photoService.revalidate();
+  const photos = this.photoService.getByMissionAndPlanet(this.missionId, planet.id);
+  this.photos.set(photos);
+
+  const allProgress = await this.missionService.getAllMissionProgress();
+  const list = allProgress.get(planet.id) || [];
+  const mission = list.find(m => m.id === this.missionId);
+  if (mission) {
+    this.missionName = mission.name;
+    this.missionDescription = mission.description;
+    this.validated = mission.validated;
   }
+}
 
-  async ensurePlanetContext() {
-    await this.planetService.revalidate();
-    this.userContext.initFromPlanetsList(this.planetService.getAll());
-
-    const { data, error } = await this.missionService['supabase']
-      .from('planet_missions')
-      .select('planet_id')
-      .eq('mission_id', this.missionId)
-      .single();
-
-    if (error || !data?.planet_id) {
-      console.warn('[DefiComponent] Impossible de retrouver la planète associée à la mission.');
-      return;
-    }
-
-    const planets = this.planetService.getAll();
-    const userPlanet = this.userContext.planet();
-    this.planetContext.initFromRoute(data.planet_id, planets, userPlanet);
-  }
 
   open(photo: Photo) {
     this.selected.set(photo);
@@ -103,23 +89,25 @@ getSelectedIndex(): number {
     const confirmed = confirm('Supprimer cette photo ?');
     if (!confirmed) return;
 
-    const success = await this.photoService.deletePhoto(photo.id);
+    const success = await this.photoService.deletePhoto(photo, this.userContext.userName());
     if (success) {
       const planet = this.planetContext.currentPlanet();
       if (!planet) return;
       const refreshed = this.photoService.getByMissionAndPlanet(this.missionId, planet.id);
       this.photos.set(refreshed);
     }
-  }
-
-  onDownload(photo: Photo) {
-    const a = document.createElement('a');
-    a.href = photo.url;
-    a.download = 'photo.jpg';
-    a.click();
+    this.selected.set(null);
   }
 
   get canEdit(): boolean {
     return !this.planetContext.readonly();
+  }
+
+  async onPhotoUploaded() {
+    await this.photoService.revalidate();
+    const planet = this.planetContext.currentPlanet();
+    if (!planet) return;
+    const photos = this.photoService.getByMissionAndPlanet(this.missionId, planet.id);
+    this.photos.set(photos);
   }
 }

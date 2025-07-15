@@ -1,129 +1,108 @@
 @use '../../../assets/styles/variables' as *;
+@use '../../../assets/styles/mixins' as *;
 :host {
-    min-height: 100vh;
-    padding-bottom: 40px;
-    &::after {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        content: "";
-        background: var(--background);
-        opacity: .5;
-        z-index: -1;
-    }
-    &::before {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        content: "";
-        background: url('/assets/ui/background.png') no-repeat;
-        z-index: -1;
-        filter: hue-rotate(var(--hue)) saturate(50%);
-    }
+    padding-top: 80px;
+    @include addBackground();
     .header-content {
         padding: calc(16px + 8px * var(--shrink));
         filter: drop-shadow(0 0 2px black);
     }
-    .subtitle {
-        font-size: calc(13px + 3px * var(--shrink));
-        color: var(--text-muted);
-        font-family: $font-base;
-        font-weight: 400;
-        transition: font-size 0s ease;
-    }
-    .title {
-        font-size: calc(32px + 32px * var(--shrink));
-        font-family: $font-head;
-        font-weight: 100;
-        line-height: 1.2;
-        color: var(--text);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        transition: font-size 0s ease;
-    }
     .ranking-list {
         display: flex;
         flex-direction: column;
-        padding: 24px 0;
+        padding: 24px 0 80px 12px;
+        gap: 8px;
         .ranking-item {
             display: flex;
-            gap: 24px;
+            box-sizing: border-box;
+            border-radius: 64px 0px 0px 64px;
+            gap: 16px;
             align-items: center;
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border-mission);
+            padding: 24px 48px 24px 96px;
+            background: linear-gradient(to left, rgba(#45455d, .2), rgba(#45455d, 0.05)) !important;
+            outline: 1px solid rgba(#45455d, 0.5);
+            @include applyShadow(#0c0c0c, .3);
+            position: relative;
+            margin-left: 36px;
             &.top-1 {
-                padding: 32px 24px;
-                .rank {
-                    font-size: 48px;
-                }
+                background: linear-gradient(to left, rgba(#fff36b, .2), rgba(#fff36b, 0.05)) !important;
+                outline: 1px solid rgba(#fff36b, 0.5);
+                margin-left: 0px;
+                padding-right: 12px;
                 .planet-name {
                     font-size: 32px;
                 }
-                .progress-bar {
-                    height: 16px;
-                }
             }
             &.top-2 {
-                padding: 24px 24px;
-                .rank {
-                    font-size: 40px;
-                }
+                background: linear-gradient(to left, rgba(#a1a08f, .2), rgba(#a1a08f, 0.05)) !important;
+                margin-left: 12px;
+                outline: 1px solid rgba(#a1a08f, 0.5);
+                padding-right: 24px;
                 .planet-name {
                     font-size: 28px;
                 }
-                .progress-bar {
-                    height: 12px;
+            }
+            &.top-3 {
+                background: linear-gradient(to left, rgba(#ba866b, .2), rgba(#ba866b, 0.05)) !important;
+                margin-left: 24px;
+                outline: 1px solid rgba(#ba866b, 0.5);
+                padding-right: 36px;
+                .planet-name {
+                    font-size: 24px;
                 }
             }
-        }
-        &.top-3 {
-            padding: 12px 0px;
-            .rank {
-                font-size: 36px;
-            }
-            .planet-name {
-                font-size: 24px;
-            }
-            .progress-bar {
-                height: 10px;
+            &.current-user {
+                background: linear-gradient(to left, rgba($global-primary-color, .2), rgba($global-primary-color, 0.05)) !important;
+                outline: 1px solid rgba($global-primary-color, 0.5);
             }
         }
     }
 }
 
 .rank {
-    color: var(--text-muted);
+    color: $text-color-muted-hard;
     font-family: $font-head;
-    font-size: 32px;
+    margin-right: 8px;
+}
+
+.progress-text {
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 2px black;
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .avatar {
+    position: absolute;
     width: 80px;
+    left: 0px;
+    top: 4px;
 }
 
 .details {
     flex: 1;
+    line-height: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
 }
 
 .planet-name {
     color: var(--text);
     font-family: $font-head;
     font-size: 24px;
+    .highlight {
+        font-size: 12px;
+    }
 }
 
 .progress-bar {
     height: 8px;
-}
-
-.current-user {
-    background: $global-success-bg;
-    outline: 2px solid $global-success-text;
+    border-radius: 16px;
 }

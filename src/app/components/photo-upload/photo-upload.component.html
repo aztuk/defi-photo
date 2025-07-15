@@ -1,5 +1,5 @@
 <div class="upload-wrapper" (click)="onClick()">
-    <ng-content *ngIf="!uploading"></ng-content>
+    <i class="fa-solid fa-plus" *ngIf="!uploading"></i>
 
     <input #fileInput type="file" accept="image/*" (change)="onFileChange($event)" hidden />
 

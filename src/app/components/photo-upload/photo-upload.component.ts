@@ -11,7 +11,7 @@ import { UserContextService } from '../../core/context/user-context.service';
   styleUrls: ['./photo-upload.component.scss']
 })
 export class PhotoUploadComponent {
-  @Input({ required: true }) missionId!: string;
+  @Input() missionId: string | null = null;
   @Output() photoUploaded = new EventEmitter<File>();
   @ViewChild('fileInput') fileInputRef?: ElementRef<HTMLInputElement>;
 
@@ -29,14 +29,14 @@ export class PhotoUploadComponent {
     const planet = this.user.planet();
     const name = this.user.userName();
 
-    if (!file || !planet || !name) {
-      alert("Utilisateur ou planète non définis.");
+    if (!file || !name) {
+      alert("Utilisateur non défini.");
       return;
     }
 
     this.uploading = true;
     try {
-      await this.photoService.upload(file, this.missionId, planet.id, name);
+      await this.photoService.upload(file, this.missionId, planet?.id ?? null, name);
 
   this.photoUploaded.emit(file);
       } catch (err: any) {

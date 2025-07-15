@@ -1,10 +1,11 @@
 <ng-container *ngIf="!loading(); else loadingTpl">
     <app-scroll-header>
         <div class="header-content">
-            <div class="title">Classement</div>
-            <div class="subtitle" *ngIf="userRank() as rank">Votre table est actuellement {{ rank }} /8</div>
+            <div class="identity">
+                <div class="subtitle">Classement</div>
+                <div class="title" *ngIf="userRank() as rank">Votre table est actuellement {{ rank }} /8</div>
 
-
+            </div>
         </div>
     </app-scroll-header>
 
@@ -15,10 +16,12 @@
         'top-3': i === 2,
        'current-user': isUserPlanet(planet.name)
       }">
-            <div class="rank">#{{ i + 1 }}</div>
             <div class="details">
-                <div class="planet-name">{{ planet.name }}</div>
-                <app-progress class="progress-bar" [planetName]="planet.name" [value]="planet.progressPercent" />
+                <div class="planet-name">
+                    <span class="rank">#{{ i + 1 }}</span>{{ planet.name }} </div>
+                <app-progress class="progress-bar" [planetName]="planet.name" [value]="planet.progressPercent">
+
+                </app-progress>
             </div>
             <div class="avatar">
                 <app-planet-avatar [planet]="planet" />

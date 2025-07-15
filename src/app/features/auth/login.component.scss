@@ -22,7 +22,7 @@
         font-size: 48px;
     }
     .description {
-        color: var(--text-muted);
+        color: $text-color-muted-hard;
         font-family: $font-base;
         font-size: 17px;
         line-height: 1.6em;
@@ -50,7 +50,7 @@
 }
 
 .selected-planet {
-    color: var(--text-muted);
+    color: $text-color-muted-hard;
     font-family: $font-base;
     font-size: 17px;
     line-height: 1.6em;
@@ -69,7 +69,7 @@
         font-size: 24px;
     }
     .hint {
-        color: var(--progress);
+        color: $global-primary-color;
         font-family: $font-base;
         font-size: 12px;
     }
@@ -99,7 +99,7 @@ input {
     left: 40px;
     right: 40px;
     height: 48px;
-    background: var(--progress);
+    background: $global-primary-color;
     color: black;
     font-size: 17px;
     font-weight: bold;

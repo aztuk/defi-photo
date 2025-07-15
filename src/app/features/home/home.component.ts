@@ -63,7 +63,9 @@ onPlanetClick(planet: PlanetWithMissionsProgress) {
     ]);
 
     const allPlanets = this.planetService.getAll();
-    this.userContext.initFromPlanetsList(allPlanets);
+    if (!this.userContext.planet()) {
+      this.userContext.initFromPlanetsList(allPlanets);
+    }
 
     const progressMap = await this.missionService.getAllMissionProgress();
 

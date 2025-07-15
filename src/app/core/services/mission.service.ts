@@ -106,7 +106,6 @@ export class MissionService {
    * Retourne une map de planet_id → liste des missions avec le nombre de photos publiées
    */
  async getAllMissionProgress(): Promise<Map<string, MissionProgress[]>> {
-  console.time('[MissionService] getAllMissionProgress');
 
   const links = this.planetMissions(); // toutes les associations planète/mission
   const missionIds = [...new Set(links.map(link => link.mission_id))];
@@ -159,7 +158,6 @@ export class MissionService {
     missions.sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  console.timeEnd('[MissionService] getAllMissionProgress');
   return result;
 }
 

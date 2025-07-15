@@ -1,6 +1,6 @@
-<div class="gallery">
+<div class="gallery {{size}}">
     <div *ngFor="let photo of photos" class="photo" (click)="onClick(photo)">
-        <img [src]="photo.url" [alt]="photo.id" />
+        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" [attr.data-src]="photo.url" [alt]="photo.id" />
         <button *ngIf="canEdit" class="delete" (click)="onDelete(photo, $event)">✕</button>
     </div>
 </div>

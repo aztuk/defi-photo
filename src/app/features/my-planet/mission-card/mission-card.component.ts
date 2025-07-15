@@ -33,9 +33,12 @@ export class MissionCardComponent implements OnInit {
   }
 
 
-  get routerLink(): string {
-    return `/defi/${this.mission.id}`;
-  }
+get routerLink(): string {
+  const planet = this.context.currentPlanet();
+  if (!planet) return '/'; // fallback sécurisé
+  return `/defi/${planet.id}/${this.mission.id}`;
+}
+
 get photosCount(): number {
   const planet = this.context.currentPlanet();
   if (!planet) return 0;

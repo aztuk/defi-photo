@@ -50,12 +50,10 @@
 .mission-item {
     display: flex;
     align-items: flex-start;
-    background: $background-elevation-400;
     padding: 12px;
     border-radius: 8px;
     gap: 16px;
     font-size: 13px;
-    border: 1px solid $border-color;
     .fa {
         font-size: 14px;
         &.fa-square {

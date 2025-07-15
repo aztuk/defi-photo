@@ -1,1 +1,13 @@
-<p>gallery.component works!</p>
+<div class="identity">
+    <div class="subtitle">Galerie</div>
+    <div class="title">Toutes les photos, de tous les invités</div>
+</div>
+
+<div class="grid">
+    <app-photo-gallery [size]="'sm'" [photos]="photos()" (photoClick)="open($event)" (deletePhoto)="onDelete($event)"></app-photo-gallery>
+</div>
+<app-photo-viewer *ngIf="selected()" [photos]="photos()" [index]="getSelectedIndex()" [canEdit]="canEdit(selected()!)" (close)="close()" (delete)="onDelete($event)" />
+
+<div class="floating-upload">
+    <app-photo-upload [missionId]="null" (photoUploaded)="onPhotoUploaded()"></app-photo-upload>
+</div>

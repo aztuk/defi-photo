@@ -1,6 +1,5 @@
 @use 'variables' as *;
-@mixin applyShadow($color) {
-    $opacity: 1;
+@mixin applyShadow($color, $opacity: 1) {
     box-shadow: 0 1px 3px rgba($color, $opacity), 0 2px 5px rgba($color, $opacity), 0 3px 8px rgba($color, $opacity), 0 5px 13px rgba($color, $opacity), 0 8px 21px rgba($color, $opacity), 0 13px 54px rgba($color, $opacity);
 }
 
@@ -9,7 +8,7 @@
     flex: 1;
     .title {
         font-size: calc(13px + 3px * var(--shrink));
-        color: var(--text-muted);
+        color: $text-color-muted-hard;
         font-family: $font-base;
         font-weight: 400;
         transition: font-size 0.3s ease;
@@ -38,7 +37,7 @@
         left: 0;
         right: 0;
         content: "";
-        background: var(--background);
+        background: rgba(0, 0, 0, 0.05);
         opacity: 1;
         z-index: -1;
     }
@@ -49,9 +48,10 @@
         left: 0;
         right: 0;
         content: "";
+        filter: brightness(.8);
         background: url('/assets/ui/background.png') no-repeat;
-        opacity: .5;
+        background-size: cover;
+        opacity: 1;
         z-index: -1;
-        filter: hue-rotate(var(--hue));
     }
 }

@@ -32,7 +32,8 @@ export class BottomNavComponent {
   });
 
   readonly isPlanetActive = computed(() =>
-    this.currentUrl().startsWith('/planet')
+    this.currentUrl().startsWith('/planet') ||
+    this.currentUrl().startsWith('/defi')
   );
 
   readonly isGalleryActive = computed(() =>
@@ -42,6 +43,7 @@ export class BottomNavComponent {
 readonly isHomeActive = computed(() =>
   this.currentUrl().startsWith('/') &&
   !this.currentUrl().startsWith('/planet') &&
+  !this.currentUrl().startsWith('/defi') &&
   !this.currentUrl().startsWith('/gallery')
 );
 

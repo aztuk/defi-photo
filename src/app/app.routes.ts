@@ -6,11 +6,12 @@ import { PlanetSelectorComponent } from './features/auth/planet-selector/planet-
 import { UsernameConfirmationComponent } from './features/auth/username-confirmation/username-confirmation.component';
 import { UsernameInputComponent } from './features/auth/username-input/username-input.component';
 import { WelcomeComponent } from './features/auth/welcome/welcome.component';
+import { secureContextGuard } from './core/guards/app-context.guard';
 
 export const appRoutes: Routes = [
   {
     path: '',
-    canActivate: [authGuard],
+    canActivate: [authGuard, ],
     loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
   },
   {
@@ -40,12 +41,12 @@ export const appRoutes: Routes = [
   },
   {
     path: 'planet/:planetId',
-    canActivate: [authGuard],
+  canActivate: [authGuard, secureContextGuard],
     loadComponent: () => import('./features/my-planet/my-planet.component').then(m => m.MyPlanetComponent),
   },
   {
   path: 'planet/:planetId/view',
-  canActivate: [authGuard],
+  canActivate: [authGuard, secureContextGuard],
   loadComponent: () => import('./features/my-planet/my-planet.component').then(m => m.MyPlanetComponent),
 },
 {
@@ -59,12 +60,8 @@ export const appRoutes: Routes = [
     loadComponent: () => import('./features/gallery/gallery.component').then(m => m.GalleryComponent),
   },
   {
-    path: 'history',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/history/history.component').then(m => m.HistoryComponent),
-  },
-  {
-    path: 'defi/:id',
-     loadComponent: () => import('./features/defi/defi.component').then(m => m.DefiComponent)
+    path: 'defi/:planetId/:id',
+  canActivate: [authGuard, secureContextGuard],
+  loadComponent: () => import('./features/defi/defi.component').then(m => m.DefiComponent)
   }
 ];

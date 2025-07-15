@@ -13,8 +13,8 @@
     color: var(--text);
     cursor: pointer;
     gap: 20px;
-    padding: 32px 16px;
-    border-radius: 8px;
+    padding: 16px;
+    border-radius: 8px 8px;
     @include applyShadow(black);
     .text-wrapper {
         display: flex;
@@ -37,36 +37,49 @@
     .name {
         color: var(--text);
         font-family: $font-head;
-        font-size: 22px;
+        font-size: 20px;
         flex: 1;
     }
     .description {
-        color: var(--text-muted);
-        font-size: 14px;
+        color: $text-color-muted-hard;
+        font-size: 13px;
         font-weight: 100;
         line-height: 1.5;
-        /*
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;*/
-        opacity: .5;
     }
     &.validated {
         position: relative;
-        background: $global-success-bg;
-        border: 1px solid $global-success-text;
-        .name,
-        .nb {
-            color: $global-success-text;
-        }
+        background: linear-gradient(to left, rgba($global-success-text, .2), rgba($global-success-text, 0.05));
+        border: 1px solid rgba($global-success-text, 0.5);
         .description {
-            opacity: 1;
+            color: var(--text);
+        }
+        .checkmark {
+            position: relative;
+            background: linear-gradient(to right, rgba($global-success-text, .2), rgba($global-success-text, .1));
+            width: 48px;
+            font-size: 24px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: $global-success-text;
+            &::after {
+                position: absolute;
+                top: -8px;
+                bottom: -8px;
+                left: -8px;
+                right: -8px;
+                content: '';
+                background: linear-gradient(to right, rgba($global-success-text, .2), rgba($global-success-text, .1));
+                border-radius: 50%;
+            }
         }
     }
 }
 
 .primary-button {
-    background: var(--progress);
+    background: $global-primary-color;
     border-radius: 4px;
     height: 40px;
     display: flex;
