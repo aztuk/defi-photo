@@ -14,7 +14,7 @@
     <div class="text-wrapper">
         <div class="name">{{ mission.name }}</div>
         <div class="description">{{ mission.description }}</div>
-        <div class="reward" *ngIf="!mission.validated">Récompense: 10 pts</div>
-        <div class="reward validated" *ngIf="mission.validated">+10 pts</div>
+        <div class="reward" *ngIf="!mission.validated">Récompense: {{mission.points}} pts</div>
+        <div class="reward validated" *ngIf="mission.validated">+{{mission.points}} pts</div>
     </div>
 </a>
