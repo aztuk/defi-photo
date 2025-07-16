@@ -4,15 +4,17 @@
         <span class="checkmark">
           <i class="fa-solid fa-check"></i>
         </span>
-
+    </div>
+    <div class="icon-wrapper" *ngIf="!mission.validated">
+        <span class="checkmark">
+          <i class="fa-solid fa-medal"></i>
+        </span>
     </div>
 
     <div class="text-wrapper">
         <div class="name">{{ mission.name }}</div>
-        <div class="description" *ngIf="!mission.validated">{{ mission.description }}</div>
-        <div class="description" *ngIf="mission.validated">{{ photosCount }} photo{{ photosCount > 1 ? 's' : '' }}</div>
-    </div>
-    <div class="icon-wrapper">
-        <i *ngIf="!mission.validated" class="fa-solid fa-chevron-right"></i>
+        <div class="description">{{ mission.description }}</div>
+        <div class="reward" *ngIf="!mission.validated">Récompense: 10 pts</div>
+        <div class="reward validated" *ngIf="mission.validated">+10 pts</div>
     </div>
 </a>

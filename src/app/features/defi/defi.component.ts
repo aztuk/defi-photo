@@ -28,6 +28,7 @@ export class DefiComponent implements OnInit {
   missionName = '';
   missionDescription = '';
   validated = false;
+  missionPoints = 0;
   planetId = '';
 
   constructor(
@@ -73,6 +74,7 @@ getSelectedIndex(): number {
     this.missionName = mission.name;
     this.missionDescription = mission.description;
     this.validated = mission.validated;
+    this.missionPoints = mission.points;
   }
 }
 
@@ -91,10 +93,7 @@ getSelectedIndex(): number {
 
     const success = await this.photoService.deletePhoto(photo, this.userContext.userName());
     if (success) {
-      const planet = this.planetContext.currentPlanet();
-      if (!planet) return;
-      const refreshed = this.photoService.getByMissionAndPlanet(this.missionId, planet.id);
-      this.photos.set(refreshed);
+      await this.refreshMissionStatus();
     }
     this.selected.set(null);
   }
@@ -104,10 +103,21 @@ getSelectedIndex(): number {
   }
 
   async onPhotoUploaded() {
+    await this.refreshMissionStatus();
+  }
+
+  private async refreshMissionStatus() {
     await this.photoService.revalidate();
     const planet = this.planetContext.currentPlanet();
     if (!planet) return;
     const photos = this.photoService.getByMissionAndPlanet(this.missionId, planet.id);
     this.photos.set(photos);
+
+    const allProgress = await this.missionService.getAllMissionProgress();
+    const list = allProgress.get(planet.id) || [];
+    const mission = list.find(m => m.id === this.missionId);
+    if (mission) {
+      this.validated = mission.validated;
+    }
   }
 }

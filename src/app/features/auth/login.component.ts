@@ -15,24 +15,9 @@ export class LoginComponent implements OnInit {
   private planetService = inject(PlanetService);
 
   async ngOnInit() {
-    await this.planetService.revalidate();
-    const allPlanets = this.planetService.getAll();
-    this.user.initFromPlanetsList(allPlanets); // Définit la planète active si possible
-
-    const hasSession = this.user.isLoggedIn();
-    const queryPlanet = this.route.snapshot.queryParamMap.get('planet');
-
-    if (hasSession) {
-      this.router.navigate(['/auth/planet-confirmation']);
-      return;
-    }
-
-    if (queryPlanet) {
-      this.user.setTemporaryPlanet(queryPlanet); // stock temporaire
-      this.router.navigate(['/auth/planet-confirmation']);
-      return;
-    }
-
-    this.router.navigate(['/auth/planet-selector']);
+    this.router.navigate(['/auth/welcome'], {
+      queryParams: this.route.snapshot.queryParams,
+      queryParamsHandling: 'merge',
+    });
   }
 }

@@ -1,8 +1,9 @@
 import { Component, inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserContextService } from '../../../core/context/user-context.service';
 import { FormsModule } from '@angular/forms';
+import { DebugInfoComponent } from '../../../components/debug-info/debug-info.component';
 
 @Component({
   selector: 'app-username-input',
@@ -13,7 +14,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class UsernameInputComponent implements AfterViewInit {
   private router = inject(Router);
-  private user = inject(UserContextService);
+  private route = inject(ActivatedRoute);
+  user = inject(UserContextService);
 
   name = '';
   @ViewChild('inputRef') inputRef!: ElementRef<HTMLInputElement>;
@@ -23,14 +25,16 @@ export class UsernameInputComponent implements AfterViewInit {
   }
 
   onSubmit() {
-    const planet = this.user.planetName();
+    const planet = this.user.temporaryPlanetName() || this.user.planetName();
     if (!planet) {
       alert('Erreur : planète manquante.');
       return;
     }
 
     this.user.login(this.name, planet);
-    this.router.navigate(['/auth/welcome']);
+
+    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || `/planet/${this.user.planetId()}`;
+    this.router.navigateByUrl(returnUrl);
   }
 
   isDisabled() {

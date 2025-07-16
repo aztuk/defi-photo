@@ -1,13 +1,11 @@
 <ng-container *ngIf="!loading(); else loadingTpl">
-    <app-scroll-header>
-        <div class="header-content">
-            <div class="identity">
-                <div class="subtitle">Classement</div>
-                <div class="title" *ngIf="userRank() as rank">Votre table est actuellement {{ rank }} /8</div>
+    <div class="header-content">
+        <div class="identity">
+            <div class="subtitle">Classement</div>
+            <div class="title" *ngIf="userRank() as rank">Votre table est actuellement {{ rank }} /8</div>
 
-            </div>
         </div>
-    </app-scroll-header>
+    </div>
 
     <section class="ranking-list">
         <div class="ranking-item" *ngFor="let planet of planetsProgress(); let i = index" (click)="onPlanetClick(planet)" [ngClass]="{
@@ -19,9 +17,9 @@
             <div class="details">
                 <div class="planet-name">
                     <span class="rank">#{{ i + 1 }}</span>{{ planet.name }} </div>
-                <app-progress class="progress-bar" [planetName]="planet.name" [value]="planet.progressPercent">
-
-                </app-progress>
+                <div class="score">
+                    {{ planet.score }}<span class="small"> pts</span>
+                </div>
             </div>
             <div class="avatar">
                 <app-planet-avatar [planet]="planet" />

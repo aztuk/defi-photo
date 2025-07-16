@@ -6,6 +6,7 @@ import { BottomNavComponent } from "./components/bottom-nav/bottom-nav.component
 import { ThemeService } from './core/services/theme.service';
 import { filter } from 'rxjs';
 import { NotificationComponent } from './components/notification/notification.component';
+import { FullscreenService } from './core/services/fullscreen.service';
 
 @Component({
   selector: 'app-root',
@@ -21,22 +22,28 @@ export class AppComponent {
 constructor(
   public router: Router,
   public theme: ThemeService,
-  private user: UserContextService
+  private user: UserContextService,
+  private fullscreenService: FullscreenService
 ) {
   this.router.events
     .pipe(filter(e => e instanceof NavigationEnd))
     .subscribe(() => {
       this.theme.initGlobalTheme(); // <-- ici
       this.currentUrl.set(this.router.url);
+      this.fullscreenService.ensureFullscreen();
     });
 }
 
 ngOnInit(): void {
+  if (this.user.isLoggedIn()) {
+    this.fullscreenService.ensureFullscreen();
+  }
 }
 
   // ✅ computed pour que ça se mette à jour
-  readonly shouldShowBottomNav = computed(() =>
-    !this.currentUrl().startsWith('/login')
-  );
+  readonly shouldShowBottomNav = computed(() => {
+    const url = this.currentUrl();
+    return !url.startsWith('/login') && !url.startsWith('/auth');
+  });
 
 }

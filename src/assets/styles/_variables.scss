@@ -10,12 +10,14 @@ $text-color-danger: #b62121;
 $global-primary-color: #78b7ff;
 $global-success-bg: rgba(19, 255, 157, 0.1); // --background-success
 $global-success-text: #55f3b1; // --text-success
-$global-danger-text: #9e1919; // --text-success
+$global-danger-text: #ff2f2f; // --text-success
 // font
 $font-base: "Cabin",
 sans-serif;
 $font-head: "Gentium Book Plus",
 serif;
+$font-score: "Anta",
+sans-serif;
 $shadow-color: #00000003;
 $shadow-1: 0 1px 3px $shadow-color,
 0 2px 5px $shadow-color,

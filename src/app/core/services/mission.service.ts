@@ -58,7 +58,7 @@ export class MissionService {
     if (!error) await this.loadMissions();
   }
 
-  async create(payload: { name: string; description: string }): Promise<string> {
+  async create(payload: { name: string; description: string; points: number }): Promise<string> {
     const { data, error } = await this.supabase
       .from('missions')
       .insert(payload)
@@ -143,7 +143,7 @@ export class MissionService {
     const entry: MissionProgress = {
       ...mission,
       photos_published: count,
-      validated: link.validated // ✅ on ne se base plus sur count
+      validated: count > 0
     };
 
     if (!result.has(link.planet_id)) {

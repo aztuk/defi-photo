@@ -32,6 +32,17 @@ export class MissionByPlanetComponent implements OnInit {
     this.planets.set(this.planetService.getAll());
   }
 
+  getTotalPoints(planet: Planet) {
+    let total = 0;
+    const missions = this.getMissionsForPlanet(planet.id)
+
+    missions.forEach((m) => {
+      total += m.points;
+    })
+
+    return total;
+  }
+
   getMissionsForPlanet(planetId: string): Mission[] {
     const linkedMissionIds = this.missionService.planetMissions()
       .filter(link => link.planet_id === planetId)

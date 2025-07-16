@@ -30,6 +30,10 @@
     min-height: 100vh;
     line-height: 1.7;
     box-sizing: border-box;
+    >* {
+        position: relative;
+        z-index: 1;
+    }
     &::after {
         position: fixed;
         top: 0;
@@ -39,7 +43,7 @@
         content: "";
         background: rgba(0, 0, 0, 0.05);
         opacity: 1;
-        z-index: -1;
+        z-index: 0;
     }
     &::before {
         position: fixed;
@@ -52,6 +56,6 @@
         background: url('/assets/ui/background.png') no-repeat;
         background-size: cover;
         opacity: 1;
-        z-index: -1;
+        z-index: 0;
     }
 }

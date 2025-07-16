@@ -6,17 +6,20 @@
     justify-content: center;
     align-items: center;
     padding: 16px;
+    color: white;
     .admin-login {
         flex-direction: column;
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 40px;
+        color: white;
     }
     input {
         height: 30px;
         border: 1px solid $border-color;
         border-radius: 8px;
         padding: 8px 12px;
+        color: white;
     }
 }

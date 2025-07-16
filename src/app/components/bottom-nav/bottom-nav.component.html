@@ -1,17 +1,17 @@
 <nav class="bottom-nav">
-    <a routerLink="/" [class.active]="isHomeActive()">
-        <i class="fa-solid fa-trophy"></i> Classement
+    <a [routerLink]="classementLink()" [class.active]="isHomeActive() || isClassementActive()" (click)="onClick()">
+        <i class="fa-solid fa-trophy"></i> {{ classementLabel() }}
     </a>
 
-    <a [routerLink]="planetLink()" [class.active]="isPlanetActive()">
-        <i class="fa-solid fa-globe"></i> Planète
+    <a [routerLink]="planetLink()" [class.active]="isPlanetActive()" (click)="onClick()">
+        <i class="fa-solid fa-globe"></i> {{ userPlanet()?.name || 'Planète' }}
     </a>
 
-    <a routerLink="/gallery" [class.active]="isGalleryActive()">
+    <a routerLink="/gallery" [class.active]="isGalleryActive()" (click)="onClick()">
         <i class="fa-solid fa-image"></i> Galerie
     </a>
 
-    <a routerLink="/test-access">
+    <a routerLink="/test-access" (click)="onClick()">
         <i class="fa-solid fa-right-from-bracket"></i> Quitter
     </a>
 </nav>

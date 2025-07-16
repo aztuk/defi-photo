@@ -1,5 +1,5 @@
 <ng-container *ngIf="!loading(); else loadingTpl">
-    <app-my-planet-header [progress]="missionProgress()" [rank]="planetRank()!" [total]="totalPlanets()" />
+    <app-my-planet-header [progress]="missionProgress()" [rank]="planetRank()!" [total]="totalPlanets()" [score]="planetScore()" />
 
     <section class="mission-list">
         <app-mission-card *ngFor="let mission of missionProgress(); let i=index;" [nb]="i" [mission]="mission" />

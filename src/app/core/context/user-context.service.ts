@@ -19,6 +19,7 @@ export class UserContextService {
     return this._allPlanets().find(p => p.name.toLowerCase() === planetName.toLowerCase()) ?? null;
   });
   readonly planetId = computed(() => this.planet()?.id ?? null);
+  readonly temporaryPlanetName = computed(() => this._temporaryPlanetName());
 
   constructor() {
     // Lecture du localStorage au démarrage

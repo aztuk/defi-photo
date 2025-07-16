@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ScrollHeaderComponent, PlanetAvatarComponent, ProgressComponent],
+  imports: [CommonModule, PlanetAvatarComponent, ProgressComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
@@ -71,18 +71,20 @@ onPlanetClick(planet: PlanetWithMissionsProgress) {
 
     const fullList: PlanetWithMissionsProgress[] = this.planetService.getAll().map(p => {
       const progress = progressMap.get(p.id) || [];
-      const validated = progress.filter(m => m.validated).length;
-      const percent = progress.length === 0 ? 0 : Math.round((validated / progress.length) * 100);
+      const validated = progress.filter(m => m.validated);
+      const score = validated.reduce((acc, m) => acc + m.points, 0);
+      const percent = progress.length === 0 ? 0 : Math.round((validated.length / progress.length) * 100);
       return {
         ...p,
         missionsProgress: progress,
-        missionsValidated: validated,
-        progressPercent: percent
+        missionsValidated: validated.length,
+        progressPercent: percent,
+        score: score
       };
     });
 
-    // Tri décroissant par nb de missions validées
-    fullList.sort((a, b) => b.missionsValidated - a.missionsValidated);
+    // Tri décroissant par score
+    fullList.sort((a, b) => b.score - a.score);
 
     this.planetsProgress.set(fullList);
     this.loading.set(false);

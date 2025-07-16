@@ -1,5 +1,7 @@
 @use '../../../../assets/styles/variables' as *;
-:host {}
+:host {
+    color: white;
+}
 
 .planet-list {
     display: flex;
@@ -16,6 +18,10 @@
     }
 }
 
+button {
+    color: white;
+}
+
 .planet-avatar {
     height: 48px;
     position: relative;
@@ -28,7 +34,6 @@
     h3 {
         font-family: $font-head;
         font-size: 2rem;
-        color: $text-color;
         flex: 1;
     }
 }
@@ -54,14 +59,10 @@
     border-radius: 8px;
     gap: 16px;
     font-size: 13px;
+    background: #111;
+    border: 1px solid #333;
     .fa {
         font-size: 14px;
-        &.fa-square {
-            color: $text-color-muted-hard;
-        }
-        &.fa-trash {
-            color: $text-color-danger;
-        }
     }
     .content {
         flex: 1;
@@ -75,7 +76,6 @@
         font-size: 16px;
     }
     .description {
-        color: $text-color-muted-soft;
         flex: 1;
         line-height: 20px;
         font-size: 12px;
@@ -90,6 +90,7 @@
             width: 32px;
             height: 32px;
             border-radius: 4px;
+            color: white;
         }
     }
 }

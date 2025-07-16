@@ -1,4 +1,9 @@
 @use 'variables' as *;
+html,
+body {
+    background: #0b0e10;
+}
+
 body {
     font-size: $rem;
     font-family: $font-base;

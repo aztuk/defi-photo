@@ -22,6 +22,7 @@ export class MissionFormComponent implements OnChanges, OnDestroy {
 
   name = '';
   description = '';
+  points = 0;
   selectedPlanets = new Set<string>();
   planets: Planet[] = [];
 
@@ -43,6 +44,7 @@ export class MissionFormComponent implements OnChanges, OnDestroy {
       if (this.mission) {
         this.name = this.mission.name;
         this.description = this.mission.description;
+        this.points = this.mission.points;
         const links = this.missionService.planetMissions()
           .filter(link => link.mission_id === this.mission!.id);
         this.selectedPlanets = new Set(links.map(l => l.planet_id));
@@ -78,11 +80,11 @@ export class MissionFormComponent implements OnChanges, OnDestroy {
     let missionId: string;
 
     if (this.mission) {
-      await this.missionService.updateMission(this.mission.id, { name, description });
+      await this.missionService.updateMission(this.mission.id, { name, description, points: this.points });
       await this.missionService.unlinkAllPlanets(this.mission.id);
       missionId = this.mission.id;
     } else {
-      missionId = await this.missionService.create({ name, description });
+      missionId = await this.missionService.create({ name, description, points: this.points });
     }
 
     for (const planetId of this.selectedPlanets) {

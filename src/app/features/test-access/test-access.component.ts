@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserContextService, LOCAL_STORAGE_KEY } from '../../core/context/user-context.service';
+import { DebugInfoComponent } from "../../components/debug-info/debug-info.component";
 
 @Component({
   selector: 'app-test-access',
   standalone: true,
-  imports: [],
+  imports: [DebugInfoComponent],
   templateUrl: './test-access.component.html'
 })
 export class TestAccessComponent {

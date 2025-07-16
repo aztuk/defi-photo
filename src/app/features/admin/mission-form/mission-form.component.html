@@ -18,6 +18,11 @@
         <textarea [(ngModel)]="description" name="description" required></textarea>
       </label>
 
+        <label class="input">
+        Points
+        <input type="number" [(ngModel)]="points" name="points" required />
+        </label>
+
         <div class="planet-list">
             <div *ngFor="let planet of planetService.planets()">
                 <label class="checkbox">

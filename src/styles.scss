@@ -101,10 +101,10 @@ button {
 }
 
 .floating-upload {
-    position: fixed;
-    bottom: 72px;
+    position: fixed !important;
+    bottom: 80px;
     right: 16px;
-    z-index: 100;
+    z-index: 100 !important;
     width: 72px;
     height: 72px;
     display: flex;
@@ -143,4 +143,14 @@ button {
     line-height: 1;
     color: var(--text);
     transition: font-size 0.3s ease;
+}
+
+.score {
+    font-family: $font-score;
+    font-weight: bold;
+    color: #d7fff8;
+    .small {
+        opacity: .5;
+        font-size: .5em;
+    }
 }

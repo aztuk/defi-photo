@@ -3,7 +3,6 @@ import { authGuard } from './core/guards/auth.guard';
 import { LoginComponent } from './features/auth/login.component';
 import { PlanetConfirmationComponent } from './features/auth/planet-confirmation/planet-confirmation.component';
 import { PlanetSelectorComponent } from './features/auth/planet-selector/planet-selector.component';
-import { UsernameConfirmationComponent } from './features/auth/username-confirmation/username-confirmation.component';
 import { UsernameInputComponent } from './features/auth/username-input/username-input.component';
 import { WelcomeComponent } from './features/auth/welcome/welcome.component';
 import { secureContextGuard } from './core/guards/app-context.guard';
@@ -29,7 +28,6 @@ export const appRoutes: Routes = [
     { path: '', component: LoginComponent },
     { path: 'planet-confirmation', component: PlanetConfirmationComponent },
     { path: 'planet-selector', component: PlanetSelectorComponent },
-    { path: 'username-confirmation', component: UsernameConfirmationComponent },
     { path: 'username-input', component: UsernameInputComponent },
     { path: 'welcome', component: WelcomeComponent },
   ]

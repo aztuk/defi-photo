@@ -26,6 +26,7 @@ export class MyPlanetHeaderComponent implements OnInit, AfterViewInit {
   @Input({ required: true }) progress!: MissionProgress[];
   @Input({ required: true }) rank!: number;
   @Input({ required: true }) total!: number;
+  @Input({ required: true }) score!: number;
 
   readonly planet = computed(() => this.context.currentPlanet() ?? undefined);
   readonly isReadonly;

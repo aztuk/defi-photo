@@ -19,6 +19,8 @@
 
 .panel {
     position: fixed;
+    background: black;
+    color: white;
     bottom: 0px;
     right: 0px;
     border: 1px solid $border-color;
@@ -57,5 +59,8 @@
             gap: 8px;
             align-items: center;
         }
+    }
+    button {
+        background: white;
     }
 }

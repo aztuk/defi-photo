@@ -12,15 +12,15 @@
 <div class="planet-list">
     <div class="planet-wrapper" *ngFor="let planet of planets()">
         <div class="planet-avatar">
-            <app-planet-avatar />
-            <h3>{{ planet.name }}</h3>
+            <h3>{{ planet.name }} ({{ getTotalPoints(planet) }})</h3>
             {{ getMissionsForPlanet(planet.id).length }} missions
+
         </div>
 
         <div class="mission-list">
             <div class="mission-item" *ngFor="let mission of getMissionsForPlanet(planet.id)">
                 <div class="content">
-                    <div class="name">{{ mission.name }}</div>
+                    <div class="name">{{ mission.name }} ({{mission.points}})</div>
                     <div class="description">{{ mission.description }}</div>
 
                 </div>

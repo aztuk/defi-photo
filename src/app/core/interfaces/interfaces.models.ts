@@ -15,12 +15,14 @@ export interface Mission {
   id: string;
   name: string;
   description: string;
+  points: number;
 }
 
 export interface PlanetWithMissionsProgress extends Planet {
   missionsProgress: MissionProgress[];
   missionsValidated: number;
   progressPercent: number;
+  score: number;
 }
 
 export interface MissionProgress extends Mission {

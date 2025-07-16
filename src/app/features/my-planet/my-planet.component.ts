@@ -24,6 +24,7 @@ export class MyPlanetComponent implements OnInit {
   readonly missionProgress = signal<MissionProgress[]>([]);
   readonly planetRank = signal<number | null>(null);
   readonly totalPlanets = signal(0);
+  readonly planetScore = signal(0);
 
   constructor(
     private planetService: PlanetService,
@@ -61,9 +62,10 @@ export class MyPlanetComponent implements OnInit {
     this.missionProgress.set(planetProgress);
 
     // 🏅 Calcul du rang
-    const planetScore = planetProgress.filter(m => m.validated).length;
+    const planetScore = planetProgress.filter(m => m.validated).reduce((acc, m) => acc + m.points, 0);
+    this.planetScore.set(planetScore);
     const allScores = Array.from(allProgressMap.values()).map(
-      missions => missions.filter(m => m.validated).length
+      missions => missions.filter(m => m.validated).reduce((acc, m) => acc + m.points, 0)
     );
     const sorted = [...allScores].sort((a, b) => b - a);
     const rank = sorted.indexOf(planetScore) + 1;

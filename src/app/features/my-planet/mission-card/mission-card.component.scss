@@ -2,12 +2,17 @@
 
 @use '../../../../assets/styles/variables' as *;
 @use '../../../../assets/styles/mixins' as *;
+:host {
+    position: relative;
+}
+
 .mission {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     //background: var(--background-mission);
-    border: 1px solid var(--background-mission);
+    border: 1px solid #31373bdc;
     transition: border 0.3s, box-shadow 0.3s;
     text-decoration: none;
     color: var(--text);
@@ -15,14 +20,16 @@
     gap: 20px;
     padding: 16px;
     border-radius: 8px 8px;
-    @include applyShadow(black);
+    background: linear-gradient(to left, #31373b64, #31373b16);
+    @include applyShadow(black, 0.5);
     .text-wrapper {
         display: flex;
         flex-direction: column;
         flex: 1;
     }
     .icon-wrapper {
-        padding-right: 16px;
+        position: relative;
+        margin-right: 8px;
     }
     .thumbnail {
         aspect-ratio: 3 / 2;
@@ -35,16 +42,46 @@
         }
     }
     .name {
-        color: var(--text);
+        color: white;
         font-family: $font-head;
         font-size: 20px;
         flex: 1;
     }
     .description {
         color: $text-color-muted-hard;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 100;
         line-height: 1.5;
+    }
+    .checkmark {
+        position: relative;
+        background: linear-gradient(to right, #3d43468d, #31373b64);
+        width: 48px;
+        font-size: 24px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #e7f5fd65;
+        &::after {
+            position: absolute;
+            top: -8px;
+            bottom: -8px;
+            left: -8px;
+            right: -8px;
+            content: '';
+            background: linear-gradient(to right, #31373b64, #31373b64);
+            border-radius: 50%;
+        }
+    }
+    .reward {
+        font-size: 12px;
+        margin-top: 12px;
+        color: #ffb23f;
+        &.validated {
+            color: $global-success-text;
+        }
     }
     &.validated {
         position: relative;
@@ -54,25 +91,10 @@
             color: var(--text);
         }
         .checkmark {
-            position: relative;
             background: linear-gradient(to right, rgba($global-success-text, .2), rgba($global-success-text, .1));
-            width: 48px;
-            font-size: 24px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             color: $global-success-text;
             &::after {
-                position: absolute;
-                top: -8px;
-                bottom: -8px;
-                left: -8px;
-                right: -8px;
-                content: '';
                 background: linear-gradient(to right, rgba($global-success-text, .2), rgba($global-success-text, .1));
-                border-radius: 50%;
             }
         }
     }
