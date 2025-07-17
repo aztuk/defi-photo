@@ -6,11 +6,10 @@
     </div>
 
     <div class="actions">
-        <button *ngIf="canEdit" (click)="onDelete()" class="danger"><i class="fa-solid fa-trash"></i> Supprimer</button>
+        <button *ngIf="canEdit()" (click)="onDelete()" class="danger"><i class="fa-solid fa-trash"></i> Supprimer</button>
         <div class="main-button">
             <button (click)="onDownload()"><i class="fa-solid fa-download"></i> Télécharger</button>
             <button (click)="close.emit()" class="round"><i class="fa-solid fa-xmark"></i> </button>
-
         </div>
     </div>
 </div>

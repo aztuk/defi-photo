@@ -12,10 +12,11 @@
     justify-content: center;
     .scroller {
         flex: 1;
-        overflow-x: auto;
         display: flex;
+        overflow-x: auto;
         scroll-snap-type: x mandatory;
         scroll-behavior: smooth;
+        scroll-snap-stop: always;
         .slide {
             scroll-snap-align: center;
             flex: 0 0 100vw;

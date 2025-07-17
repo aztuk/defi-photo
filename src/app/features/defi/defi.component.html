@@ -11,7 +11,7 @@
 <div class="grid">
     <app-photo-gallery [photos]="photos()" (photoClick)="open($event)" (deletePhoto)="onDelete($event)"></app-photo-gallery>
 </div>
-<app-photo-viewer *ngIf="selected()" [photos]="photos()" [index]="getSelectedIndex()" [canEdit]="canEdit" (close)="close()" (delete)="onDelete($event)" />
+<app-photo-viewer *ngIf="selected()" [photos]="photos()" [index]="getSelectedIndex()" (close)="close()" (delete)="onDelete($event)" />
 
 <div class="floating-upload" *ngIf="canEdit">
     <app-photo-upload [missionId]="missionId" (photoUploaded)="onPhotoUploaded()">

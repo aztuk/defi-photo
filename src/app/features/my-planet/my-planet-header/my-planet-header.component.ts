@@ -9,8 +9,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PlanetAvatarComponent } from '../../../components/planet-avatar/planet-avatar.component';
-import { ScrollHeaderComponent } from '../../../components/scroll-header/scroll-header.component';
-import { ProgressComponent } from '../../../components/progress/progress.component';
 import { MissionProgress } from '../../../core/interfaces/interfaces.models';
 import { PlanetContextService } from '../../../core/context/planet-context.service';
 import { UserContextService } from '../../../core/context/user-context.service';
@@ -20,7 +18,7 @@ import { UserContextService } from '../../../core/context/user-context.service';
   templateUrl: './my-planet-header.component.html',
   styleUrl: './my-planet-header.component.scss',
   standalone: true,
-  imports: [CommonModule, PlanetAvatarComponent, ScrollHeaderComponent, ProgressComponent]
+  imports: [CommonModule, PlanetAvatarComponent]
 })
 export class MyPlanetHeaderComponent implements OnInit, AfterViewInit {
   @Input({ required: true }) progress!: MissionProgress[];

@@ -1,8 +1,14 @@
 <ng-container *ngIf="!loading(); else loadingTpl">
-    <app-my-planet-header [progress]="missionProgress()" [rank]="planetRank()!" [total]="totalPlanets()" [score]="planetScore()" />
+    <app-my-planet-header [progress]="allMissions()" [rank]="planetRank()!" [total]="totalPlanets()" [score]="planetScore()" />
 
     <section class="mission-list">
-        <app-mission-card *ngFor="let mission of missionProgress(); let i=index;" [nb]="i" [mission]="mission" />
+        <h2 *ngIf="missionsToDo().length > 0">{{missionsToDo().length }} missions restantes</h2>
+        <app-mission-card *ngFor="let mission of missionsToDo(); let i=index;" [nb]="i" [mission]="mission" />
+    </section>
+    <section class="mission-list">
+
+        <h2 *ngIf="missionsDone().length > 0">{{missionsDone().length }} missions terminées</h2>
+        <app-mission-card *ngFor="let mission of missionsDone(); let i=index;" [nb]="i" [mission]="mission" />
     </section>
 </ng-container>
 

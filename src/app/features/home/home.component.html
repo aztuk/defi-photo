@@ -2,30 +2,12 @@
     <div class="header-content">
         <div class="identity">
             <div class="subtitle">Classement</div>
-            <div class="title" *ngIf="userRank() as rank">Votre table est actuellement {{ rank }} /8</div>
+            <div class="title">Classement des planètes</div>
 
         </div>
     </div>
 
-    <section class="ranking-list">
-        <div class="ranking-item" *ngFor="let planet of planetsProgress(); let i = index" (click)="onPlanetClick(planet)" [ngClass]="{
-        'top-1': i === 0,
-        'top-2': i === 1,
-        'top-3': i === 2,
-       'current-user': isUserPlanet(planet.name)
-      }">
-            <div class="details">
-                <div class="planet-name">
-                    <span class="rank">#{{ i + 1 }}</span>{{ planet.name }} </div>
-                <div class="score">
-                    {{ planet.score }}<span class="small"> pts</span>
-                </div>
-            </div>
-            <div class="avatar">
-                <app-planet-avatar [planet]="planet" />
-            </div>
-        </div>
-    </section>
+    <app-ranking />
 </ng-container>
 
 <ng-template #loadingTpl>

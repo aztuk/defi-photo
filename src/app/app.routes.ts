@@ -61,5 +61,9 @@ export const appRoutes: Routes = [
     path: 'defi/:planetId/:id',
   canActivate: [authGuard, secureContextGuard],
   loadComponent: () => import('./features/defi/defi.component').then(m => m.DefiComponent)
+  },
+  {
+    path: 'projection',
+    loadComponent: () => import('./features/projection/projection-screen.component').then(m => m.ProjectionScreenComponent)
   }
 ];

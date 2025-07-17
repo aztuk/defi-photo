@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MyPlanetHeaderComponent } from './my-planet-header/my-planet-header.component';
 import { MissionCardComponent } from './mission-card/mission-card.component';
@@ -21,7 +21,9 @@ import { DebugAuditService } from '../../core/services/debug-audit.service';
 })
 export class MyPlanetComponent implements OnInit {
   readonly loading = signal(true);
-  readonly missionProgress = signal<MissionProgress[]>([]);
+  readonly missionsToDo = signal<MissionProgress[]>([]);
+  readonly missionsDone = signal<MissionProgress[]>([]);
+  readonly allMissions = computed(() => [...this.missionsToDo(), ...this.missionsDone()]);
   readonly planetRank = signal<number | null>(null);
   readonly totalPlanets = signal(0);
   readonly planetScore = signal(0);
@@ -59,7 +61,11 @@ export class MyPlanetComponent implements OnInit {
     // 📸 Récupération des missions pour cette planète
     const allProgressMap = await this.missionService.getAllMissionProgress();
     const planetProgress = allProgressMap.get(target.id) || [];
-    this.missionProgress.set(planetProgress);
+    const toDo = planetProgress.filter(m => !m.validated).sort((a, b) => a.points - b.points);
+    const done = planetProgress.filter(m => m.validated).sort((a, b) => b.points - a.points);
+
+    this.missionsToDo.set(toDo);
+    this.missionsDone.set(done);
 
     // 🏅 Calcul du rang
     const planetScore = planetProgress.filter(m => m.validated).reduce((acc, m) => acc + m.points, 0);

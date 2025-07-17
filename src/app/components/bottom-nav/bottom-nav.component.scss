@@ -12,6 +12,7 @@ $opacity: 0.1;
     justify-content: space-around;
     z-index: 1000;
     height: 64px;
+    padding: 0 12px;
     box-shadow: 0 -1px 3px 0 rgba(black, $opacity), 0 -2px 5px 0 rgba(black, $opacity), 0 -3px 8px 0 rgba(black, $opacity), 0 -5px 13px 0 rgba(black, $opacity), 0 -8px 21px 0 rgba(black, $opacity);
     a {
         display: flex;
@@ -22,6 +23,7 @@ $opacity: 0.1;
         gap: 6px;
         color: var(--text);
         font-size: 12px;
+        flex: 1;
         i {
             display: block;
             font-size: 16px;

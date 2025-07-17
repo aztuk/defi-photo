@@ -43,7 +43,7 @@ ngOnInit(): void {
   // ✅ computed pour que ça se mette à jour
   readonly shouldShowBottomNav = computed(() => {
     const url = this.currentUrl();
-    return !url.startsWith('/login') && !url.startsWith('/auth');
+    return !url.startsWith('/login') && !url.startsWith('/auth') && !url.startsWith('/projection');
   });
 
 }

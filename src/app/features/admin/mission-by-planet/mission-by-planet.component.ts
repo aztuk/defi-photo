@@ -9,7 +9,7 @@ import { PlanetAvatarComponent } from '../../../components/planet-avatar/planet-
 @Component({
   selector: 'app-mission-by-planet',
   standalone: true,
-  imports: [CommonModule, MissionFormComponent, PlanetAvatarComponent],
+  imports: [CommonModule, MissionFormComponent],
   templateUrl: './mission-by-planet.component.html',
   styleUrls: ['./mission-by-planet.component.scss'],
 })
