@@ -113,6 +113,6 @@ export class BottomNavComponent implements OnInit {
 
   logout() {
     this.user.logout();
-    this.router.navigate(['/']);
+    this.router.navigate(['/home']);
   }
 }
