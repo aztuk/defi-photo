@@ -58,6 +58,11 @@ export const appRoutes: Routes = [
     loadComponent: () => import('./features/gallery/gallery.component').then(m => m.GalleryComponent),
   },
   {
+    path: 'upload',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/upload/upload.component').then(m => m.UploadComponent),
+  },
+  {
     path: 'defi/:planetId/:id',
   canActivate: [authGuard, secureContextGuard],
   loadComponent: () => import('./features/defi/defi.component').then(m => m.DefiComponent)

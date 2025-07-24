@@ -1,14 +1,20 @@
-<div class="photo-bg" [style.backgroundImage]="'url(' + currentPhoto()?.url + ')'" [class.fade]="fade()"></div>
-<div class="container">
-    <img *ngIf="currentPhoto()" [src]="currentPhoto()?.url" alt="photo projetée" [class.fade]="fade()" class="photo-main" />
+<app-floating-gallery [photos]="photos()"></app-floating-gallery>
 
+<div class="container">
     <!-- Overlays -->
-    <div class="photo-count" *ngIf="totalPhotos() > 0">{{ totalPhotos() }} photos</div>
+    <div class="upper-right">
+
+        <div class="upload-prompt">
+            <div class="qr-code-placeholder"><img src="/assets/ui/appCode.png" /> </div>
+
+        </div>
+        <div class="photo-count" *ngIf="totalPhotos() > 0">{{ totalPhotos() }} photos</div>
+        <div class="prompt-message">Ajoutez vos photos au mur !</div>
+
+
+    </div>
     <div class="ranking">
         <app-ranking [planets]="classement()" view="projection" />
-    </div>
-    <div class="progress-bar">
-        <div class="progress"></div>
     </div>
     <app-projection-status />
 </div>
