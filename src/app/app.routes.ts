@@ -64,6 +64,6 @@ export const appRoutes: Routes = [
   },
   {
     path: 'projection',
-    loadComponent: () => import('./features/projection/projection-screen.component').then(m => m.ProjectionScreenComponent)
+    loadComponent: () => import('./features/projection/components/projection-screen/projection-screen.component').then(m => m.ProjectionScreenComponent)
   }
 ];

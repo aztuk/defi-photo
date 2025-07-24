@@ -1,0 +1,4 @@
+<div class="status-indicator" [class.online]="isConnected()">
+    <div class="dot"></div>
+    <div class="label">{{ isConnected() ? 'Connecté' : 'Hors ligne' }}</div>
+</div>

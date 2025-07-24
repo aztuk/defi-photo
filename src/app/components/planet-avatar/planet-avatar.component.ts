@@ -12,6 +12,7 @@ import { UserContextService } from '../../core/context/user-context.service';
 })
 export class PlanetAvatarComponent {
   @Input({ required: false }) planet?: Planet;
+  @Input({ required: false }) halo?: boolean = true;
   loaded = false;
 
   user = inject(UserContextService);

@@ -1,7 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, Input, OnChanges, SimpleChanges, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PlanetAvatarComponent } from '../planet-avatar/planet-avatar.component';
-import { PlanetWithMissionsProgress } from '../../core/interfaces/interfaces.models';
+import { PlanetWithMissionsProgress, ClassementPlanet } from '../../core/interfaces/interfaces.models';
 import { UserContextService } from '../../core/context/user-context.service';
 import { Router } from '@angular/router';
 import { PlanetService } from '../../core/services/planet.service';
@@ -14,8 +14,13 @@ import { MissionService } from '../../core/services/mission.service';
   templateUrl: './ranking.component.html',
   styleUrls: ['./ranking.component.scss']
 })
-export class RankingComponent implements OnInit {
-  readonly planetsProgress = signal<PlanetWithMissionsProgress[]>([]);
+export class RankingComponent implements OnInit, OnChanges {
+  @Input() planets?: ClassementPlanet[];
+  @Input() view: 'default' | 'projection' = 'default';
+
+  @HostBinding('attr.data-view') get viewAtt() { return this.view; }
+
+  readonly planetsProgress = signal<any[]>([]);
   readonly loading = signal(true);
 
   readonly userPlanet;
@@ -26,9 +31,14 @@ export class RankingComponent implements OnInit {
     private userContext: UserContextService,
     private router: Router
   ) {
-    this.planetsProgress = signal<PlanetWithMissionsProgress[]>([]);
-    this.loading = signal(true);
     this.userPlanet = this.userContext.planet;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['planets'] && this.planets) {
+      this.planetsProgress.set(this.planets);
+      this.loading.set(false);
+    }
   }
 
   isUserPlanet(planetName: string): boolean {
@@ -48,6 +58,12 @@ export class RankingComponent implements OnInit {
   }
 
   async ngOnInit() {
+    if (this.planets) {
+      this.planetsProgress.set(this.planets);
+      this.loading.set(false);
+      return;
+    }
+
     this.loading.set(true);
 
     await Promise.all([

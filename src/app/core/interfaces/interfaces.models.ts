@@ -53,3 +53,7 @@ export interface SwipeCarouselItem {
   isAddButton?: boolean;
   deletable?: boolean;
 }
+export interface ClassementPlanet extends Planet {
+  score: number;
+  photoCount: number;
+}

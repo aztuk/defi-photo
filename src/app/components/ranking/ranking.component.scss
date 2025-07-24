@@ -113,3 +113,32 @@
         font-size: 12px;
     }
 }
+
+:host([data-view="projection"]) {
+    .ranking-list {
+        .ranking-item {
+            border-radius: 16px 0px 0px 16px;
+            margin-left: 0;
+            height: 64px;
+            padding-left: 40px;
+            &.top-1,
+            &.top-2,
+            &.top-3 {
+                .score {
+                    font-size: 20px;
+                }
+                .planet-name {
+                    font-size: 20px;
+                    padding-right: 24px;
+                }
+            }
+        }
+    }
+    .details {}
+    .avatar {
+        height: 64px;
+        width: 64px;
+        left: -32px;
+        filter: drop-shadow(0 3px 8px black);
+    }
+}

@@ -1,0 +1,14 @@
+<div class="photo-bg" [style.backgroundImage]="'url(' + currentPhoto()?.url + ')'" [class.fade]="fade()"></div>
+<div class="container">
+    <img *ngIf="currentPhoto()" [src]="currentPhoto()?.url" alt="photo projetée" [class.fade]="fade()" class="photo-main" />
+
+    <!-- Overlays -->
+    <div class="photo-count" *ngIf="totalPhotos() > 0">{{ totalPhotos() }} photos</div>
+    <div class="ranking">
+        <app-ranking [planets]="classement()" view="projection" />
+    </div>
+    <div class="progress-bar">
+        <div class="progress"></div>
+    </div>
+    <app-projection-status />
+</div>
