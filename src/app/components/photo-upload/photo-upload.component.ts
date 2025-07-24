@@ -50,10 +50,10 @@ export class PhotoUploadComponent {
     }
 
 
+    this.photoService.queueFilesForUpload(files, this.missionId, planet ?? null, name);
+
     for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      this.photoService.uploadWithProgress(file, this.missionId, planet ?? null, name);
-      this.photoUploaded.emit(file);
+      this.photoUploaded.emit(files[i]);
     }
 
     // Reset input fields to allow selecting the same file again

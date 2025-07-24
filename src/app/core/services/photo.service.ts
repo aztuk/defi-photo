@@ -1,5 +1,6 @@
 import { Injectable, signal, effect, inject } from '@angular/core';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { environment } from '../../../environments/environments';
 import { supabase } from './supabase.client';
 import { Photo } from '../interfaces/interfaces.models';
 import { NotificationService } from './notification.service';
@@ -11,9 +12,17 @@ export interface UploadPreview {
   url: string;
   publicUrl?: string;
   progress: number;
-  status: 'uploading' | 'success' | 'error';
+  status: 'queued' | 'uploading' | 'success' | 'error';
   missionId: string | null;
   error?: string;
+}
+
+interface UploadQueueItem {
+  id: string;
+  file: File;
+  missionId: string | null;
+  planetId: string | null;
+  userName: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -28,6 +37,9 @@ export class PhotoService {
   // Drapeau de revalidation
   private lastFetched: number = 0;
   private readonly TTL = 1000 * 60 * 2; // 2 minutes
+
+  private uploadQueue: UploadQueueItem[] = [];
+  private isProcessingQueue = false;
 
   constructor(private notificationService: NotificationService, private userContext: UserContextService) {
     this.revalidate();
@@ -83,127 +95,138 @@ export class PhotoService {
     return this.photos().filter(p => p.mission_id === missionId && p.planet_id === planetId);
   }
 
-  async upload(file: File, missionId: string | null, planetId: string | null, userName: string) {
-    const extension = file.name.split('.').pop();
-    const path = `${planetId || 'gallery'}/${missionId || 'user-photos'}/${Date.now()}.${extension}`;
-
-    // This method is kept for compatibility, but new uploads should use uploadWithProgress
-    const { error: uploadError } = await this.supabase
-      .storage
-      .from('photos')
-      .upload(path, file);
-
-    if (uploadError) {
-      console.error('[PhotoService] Erreur upload fichier:', uploadError.message);
-      throw uploadError;
-    }
-
-    const { publicUrl } = this.supabase
-      .storage
-      .from('photos')
-      .getPublicUrl(path).data;
-
-    const { error: insertError } = await this.supabase.from('photos').insert({
-      mission_id: missionId,
-      planet_id: planetId,
-      user_name: userName,
-      url: publicUrl,
-      status: 'published',
-    });
-
-    if (insertError) {
-      console.error('[PhotoService] Erreur insertion table photos:', insertError.message);
-      throw insertError;
-    }
-
-    if (missionId && planetId) {
-      await this.supabase
-        .from('planet_missions')
-        .update({ validated: true })
-        .match({ mission_id: missionId, planet_id: planetId });
-    }
-
-    await this.revalidate(true);
-    // The generic notification is removed to be replaced by the progress toast
-    // this.notificationService.show('Photo uploadée avec succès !');
-  }
-
-  uploadWithProgress(
-    file: File,
+  queueFilesForUpload(
+    files: FileList,
     missionId: string | null,
     planetId: string | null,
     userName: string
   ) {
-    const id = Math.random().toString(36).substring(2);
-    const url = URL.createObjectURL(file);
-    const newPreview: UploadPreview = { id, file, url, progress: 0, status: 'uploading', missionId };
+    const newPreviews: UploadPreview[] = [];
+    const newQueueItems: UploadQueueItem[] = [];
 
-    this.temporaryPhotos.update(current => [newPreview, ...current]);
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const id = Math.random().toString(36).substring(2);
+      const url = URL.createObjectURL(file);
 
-    if (file.size > 10 * 1024 * 1024) { // 10MB limit
-      this.temporaryPhotos.update(current =>
-        current.map(p => p.id === id ? { ...p, status: 'error', error: 'Fichier trop volumineux (max 10MB)' } : p)
-      );
+      // Initial state is 'queued'
+      newPreviews.push({ id, file, url, progress: 0, status: 'queued', missionId });
+      newQueueItems.push({ id, file, missionId, planetId, userName });
+    }
+
+    this.temporaryPhotos.update(current => [...newPreviews, ...current]);
+    this.uploadQueue.push(...newQueueItems);
+
+    if (!this.isProcessingQueue) {
+      this.processQueue();
+    }
+  }
+
+  private async processQueue(): Promise<void> {
+    if (this.uploadQueue.length === 0) {
+      this.isProcessingQueue = false;
+      console.log('[PhotoService] Upload queue finished.');
       return;
     }
 
-    const updatePreview = (progress: number, status: 'uploading' | 'success' | 'error', error?: string) => {
-      this.temporaryPhotos.update(current =>
-        current.map(p => p.id === id ? { ...p, progress, status, error } : p)
-      );
-    };
+    this.isProcessingQueue = true;
+    const itemToUpload = this.uploadQueue.shift();
 
-    const doUpload = async (): Promise<void> => {
+    if (!itemToUpload) {
+      // Safeguard against empty items, continue processing.
+      this.processQueue();
+      return;
+    }
+
+    console.log(`[PhotoService] [${itemToUpload.id}] Processing item from queue.`);
+
+    try {
+      await this._performUpload(itemToUpload);
+    } catch (error) {
+      console.error(`[PhotoService] [${itemToUpload.id}] A critical error occurred during upload processing:`, error);
+      // Mark the current item as failed with a generic error
+      this.temporaryPhotos.update(current =>
+        current.map(p => p.id === itemToUpload.id ? { ...p, status: 'error', error: 'Erreur critique.' } : p)
+      );
+    } finally {
+      // Always process the next item, ensuring the queue doesn't die.
+      this.processQueue();
+    }
+  }
+
+  private _performUpload(item: UploadQueueItem): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      const { id, file, missionId, planetId, userName } = item;
+
+      const updatePreview = (progress: number, status: 'queued' | 'uploading' | 'success' | 'error', error?: string, publicUrl?: string) => {
+        this.temporaryPhotos.update(current =>
+          current.map(p => p.id === id ? { ...p, progress, status, error, publicUrl } : p)
+        );
+      };
+
+      updatePreview(0, 'uploading');
+
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        updatePreview(0, 'error', 'Fichier trop volumineux (max 10MB)');
+        return reject(new Error('File too large'));
+      }
+
       const extension = file.name.split('.').pop();
       const path = `${planetId || 'gallery'}/${missionId || 'user-photos'}/${Date.now()}.${extension}`;
 
-      updatePreview(10, 'uploading'); // Start with a bit of progress
+      const url = `${environment.supabaseUrl}/storage/v1/object/photos/${path}`;
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', url, true);
 
-      const { error: uploadError } = await this.supabase.storage
-        .from('photos')
-        .upload(path, file, {
-          contentType: file.type,
-          upsert: true,
-        });
+      xhr.setRequestHeader('Authorization', `Bearer ${environment.supabaseKey}`);
+      xhr.setRequestHeader('x-upsert', 'true');
+      xhr.setRequestHeader('Content-Type', file.type);
 
-      if (uploadError) {
-        console.error(`[PhotoService] [${id}] Upload error:`, uploadError);
-        updatePreview(0, 'error', `Échec de l'upload: ${uploadError.message}`);
-        return;
-      }
 
-      updatePreview(99, 'uploading'); // Almost done
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const progress = Math.round((event.loaded / event.total) * 99);
+          console.log(`[PhotoService] [${id}] Upload progress: ${progress}%`);
+          updatePreview(progress, 'uploading');
+        }
+      };
 
-      const { data: { publicUrl } } = this.supabase.storage.from('photos').getPublicUrl(path);
+      xhr.onload = async () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          console.log(`[PhotoService] [${id}] Upload complete. Status: ${xhr.status}`);
+          const { data: { publicUrl } } = this.supabase.storage.from('photos').getPublicUrl(path);
 
-      const { data: newPhoto, error: insertError } = await this.supabase.from('photos').insert({
-        mission_id: missionId,
-        planet_id: planetId,
-        user_name: userName,
-        url: publicUrl,
-        status: 'published',
-      }).select().single();
+          const { data: newPhoto, error: insertError } = await this.supabase.from('photos').insert({
+            mission_id: missionId, planet_id: planetId, user_name: userName, url: publicUrl, status: 'published',
+          }).select().single();
 
-      if (insertError || !newPhoto) {
-        console.error(`[PhotoService] [${id}] DB insert error:`, insertError);
-        updatePreview(0, 'error', 'Erreur de base de données.');
-        return;
-      }
+          if (insertError || !newPhoto) {
+            updatePreview(0, 'error', 'Erreur base de données.');
+            return reject(insertError || new Error('DB insert failed'));
+          }
 
-      if (missionId && planetId) {
-        await this.supabase
-          .from('planet_missions')
-          .update({ validated: true })
-          .match({ mission_id: missionId, planet_id: planetId });
-      }
+          if (missionId && planetId) {
+            await this.supabase.from('planet_missions').update({ validated: true }).match({ mission_id: missionId, planet_id: planetId });
+          }
 
-      this.photos.update(currentPhotos => [newPhoto as Photo, ...currentPhotos]);
-      this.temporaryPhotos.update(current =>
-        current.map(p => p.id === id ? { ...p, progress: 100, status: 'success', publicUrl } : p)
-      );
-    };
+          this.photos.update(current => [newPhoto as Photo, ...current]);
+          updatePreview(100, 'success', undefined, publicUrl);
+          resolve();
+        } else {
+          console.error(`[PhotoService] [${id}] Upload failed with status: ${xhr.status}`, xhr.responseText);
+          updatePreview(0, 'error', `Échec: ${xhr.statusText}`);
+          reject(new Error(`Upload failed: ${xhr.statusText}`));
+        }
+      };
 
-    doUpload();
+      xhr.onerror = () => {
+        console.error(`[PhotoService] [${id}] Network error during upload.`);
+        updatePreview(0, 'error', 'Erreur réseau.');
+        reject(new Error('Network Error'));
+      };
+
+      xhr.send(file);
+    });
   }
 
   async deletePhoto(photo: Photo, currentUserName: string | null): Promise<boolean> {
