@@ -4,16 +4,18 @@
 <div class="identity">
     <button class="back" (click)="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
     <div class="subtitle"> {{ missionName }}</div>
+    <div class="count" *ngIf="photoCount() > 0">{{ photoCount() }} photos</div>
+
     <div class="title">{{ missionDescription }}</div>
     <div class="reward" *ngIf="!validated">Récompense: {{ missionPoints }} points</div>
     <div class="reward validated" *ngIf="validated">Obtenu: {{ missionPoints }} points</div>
 </div>
 <div class="grid">
-    <app-photo-gallery [photos]="photos()" (photoClick)="open($event)" (deletePhoto)="onDelete($event)"></app-photo-gallery>
+    <app-photo-gallery [photos]="photos()" (photoClick)="open($event)" (deletePhoto)="onDelete($event)" (countChange)="onCountChange($event)" [canEdit]="!planetContext.readonly()"></app-photo-gallery>
 </div>
 <app-photo-viewer *ngIf="selected()" [photos]="photos()" [index]="getSelectedIndex()" (close)="close()" (delete)="onDelete($event)" />
 
-<div class="floating-upload" *ngIf="canEdit">
-    <app-photo-upload [missionId]="missionId" (photoUploaded)="onPhotoUploaded()">
+<div class="floating-upload" *ngIf="!planetContext.readonly()">
+    <app-photo-upload [missionId]="missionId">
     </app-photo-upload>
 </div>

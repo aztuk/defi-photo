@@ -1,0 +1,10 @@
+<div class="toast-container" *ngIf="uploads$ | async as uploads">
+    <div *ngFor="let upload of uploads; trackBy: trackById" class="upload-item">
+        <div class="file-info">
+            <span class="file-name">{{ upload.file.name }}</span>
+            <span class="status" *ngIf="(upload.progress$ | async) === 100">Terminé !</span>
+            <span class="status error" *ngIf="upload.error">{{ upload.error }}</span>
+        </div>
+        <mat-progress-bar [value]="upload.progress$ | async" mode="determinate" [class.finished]="(upload.progress$ | async) === 100"></mat-progress-bar>
+    </div>
+</div>

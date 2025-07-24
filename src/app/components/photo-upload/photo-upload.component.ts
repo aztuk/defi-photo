@@ -1,5 +1,6 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { PhotoService } from '../../core/services/photo.service';
 import { UserContextService } from '../../core/context/user-context.service';
 
@@ -13,42 +14,60 @@ import { UserContextService } from '../../core/context/user-context.service';
 export class PhotoUploadComponent {
   @Input() missionId: string | null = null;
   @Output() photoUploaded = new EventEmitter<File>();
-  @ViewChild('fileInput') fileInputRef?: ElementRef<HTMLInputElement>;
+  @ViewChild('cameraInput') cameraInputRef?: ElementRef<HTMLInputElement>;
+  @ViewChild('libraryInput') libraryInputRef?: ElementRef<HTMLInputElement>;
 
 
   uploading = false;
+  showOptions = false;
 
   constructor(
     private photoService: PhotoService,
-    private user: UserContextService
+    private user: UserContextService,
+    private elementRef: ElementRef
   ) {}
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.elementRef.nativeElement.contains(event.target)) {
+      this.showOptions = false;
+    }
+  }
+
+  toggleOptions(event: MouseEvent) {
+    event.stopPropagation();
+    this.showOptions = !this.showOptions;
+  }
 
   async onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    const planet = this.user.planet();
+    const files = input.files;
+    const planet = this.user.planetId();
     const name = this.user.userName();
 
-    if (!file || !name) {
-      alert("Utilisateur non défini.");
+    if (!files || files.length === 0 || !name) {
       return;
     }
 
-    this.uploading = true;
-    try {
-      await this.photoService.upload(file, this.missionId, planet?.id ?? null, name);
 
-  this.photoUploaded.emit(file);
-      } catch (err: any) {
-        console.error(err);
-        alert('❌ Erreur upload : ' + err.message);
-      } finally {
-        this.uploading = false;
-      }
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      this.photoService.uploadWithProgress(file, this.missionId, planet ?? null, name);
+      this.photoUploaded.emit(file);
     }
 
-  onClick() {
-    this.fileInputRef?.nativeElement.click();
+    // Reset input fields to allow selecting the same file again
+    if (this.cameraInputRef) this.cameraInputRef.nativeElement.value = '';
+    if (this.libraryInputRef) this.libraryInputRef.nativeElement.value = '';
+    this.showOptions = false;
+  }
+
+  takePhoto() {
+    this.cameraInputRef?.nativeElement.click();
+  }
+
+  chooseFromLibrary() {
+    this.libraryInputRef?.nativeElement.click();
   }
 
 }

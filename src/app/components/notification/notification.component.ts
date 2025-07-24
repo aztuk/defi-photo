@@ -24,7 +24,8 @@ import { NotificationService } from '../../core/services/notification.service';
       z-index: 1000;
     }
     .success {
-      background-color:rgba(47, 210, 53, 0.64);
+      background-color: #28a745;
+      color: white;
     }
     .error {
       background-color:rgba(244, 67, 54, 0.65);

@@ -1,7 +1,14 @@
 <div class="gallery {{size}}">
+    <div *ngFor="let photo of temporaryPhotos()" class="photo uploading" [class.upload-success]="photo.status === 'success'" (click)="onClick(photo)">
+        <img [src]="photo.url" [alt]="photo.file.name" class="preview" />
+        <div class="overlay">
+            <div class="progress" *ngIf="photo.status === 'uploading'">{{ photo.progress | number:'1.0-0' }}%</div>
+            <div class="error-badge" *ngIf="photo.status === 'error'">Une erreur est survenue. Probablement trop de photos d'un coup.</div>
+        </div>
+    </div>
     <div *ngFor="let photo of photos" class="photo" (click)="onClick(photo)">
-        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" [attr.data-src]="photo.url" [alt]="photo.id" />
+        <img [src]="photo.url" [alt]="photo.id" loading="lazy" />
         <button *ngIf="canEdit" class="delete" (click)="onDelete(photo, $event)">✕</button>
     </div>
 </div>
-<div *ngIf="photos.length === 0" class="empty">Aucune photo. Soyez le premier à en ajouter une !</div>
+<div *ngIf="photos.length === 0 && temporaryPhotos().length === 0" class="empty">Aucune photo.</div>

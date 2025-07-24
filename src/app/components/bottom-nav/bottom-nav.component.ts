@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { UserContextService } from '../../core/context/user-context.service';
@@ -7,6 +7,7 @@ import { PlanetContextService } from '../../core/context/planet-context.service'
 import { FullscreenService } from '../../core/services/fullscreen.service';
 import { filter } from 'rxjs';
 import { RankService } from '../../core/services/rank.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-bottom-nav',
@@ -26,10 +27,14 @@ export class BottomNavComponent implements OnInit {
   readonly userPlanet = computed(() => this.user.planet());
   readonly currentViewedPlanet = computed(() => this.planetContext.currentPlanet());
   readonly isReadonly = computed(() => this.planetContext.readonly());
+  private destroyRef = inject(DestroyRef);
 
   constructor() {
     this.router.events
-      .pipe(filter(e => e instanceof NavigationEnd))
+      .pipe(
+        filter(e => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe(e => {
         this.currentUrl.set((e as NavigationEnd).urlAfterRedirects);
       });

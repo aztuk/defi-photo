@@ -1,0 +1,52 @@
+.toast-container {
+    position: fixed;
+    bottom: 80px;
+    right: 16px;
+    width: 320px;
+    background-color: #333;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    padding: 8px;
+}
+
+.upload-item {
+    padding: 8px;
+    border-bottom: 1px solid #555;
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.file-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.file-name {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.status {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #4caf50;
+    &.error {
+        color: #f44336;
+    }
+}
+
+mat-progress-bar {
+    height: 8px;
+    border-radius: 4px;
+    &.finished {
+        --mdc-linear-progress-active-indicator-color: #4caf50;
+    }
+}

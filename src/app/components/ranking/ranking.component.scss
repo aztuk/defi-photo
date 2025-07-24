@@ -19,7 +19,7 @@
             @include applyShadow(#0c0c0c, .3);
             position: relative;
             margin-left: 36px;
-            backdrop-filter: blur(40px);
+            backdrop-filter: blur(40px) brightness(.8);
             &.top-1 {
                 background: linear-gradient(to left, rgba(#fff36b, .2), rgba(#fff36b, 0.05)) !important;
                 outline: 1px solid rgba(#fff36b, 0.5);

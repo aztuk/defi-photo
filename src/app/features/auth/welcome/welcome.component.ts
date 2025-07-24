@@ -29,16 +29,13 @@ export class WelcomeComponent implements OnInit {
 
   enter() {
     this.fullscreenService.requestFullscreen();
-    console.log('[Welcome] Starting auth flow...');
     const queryPlanet = this.route.snapshot.queryParamMap.get('planet');
 
     if (this.user.isLoggedIn()) {
-      console.log('[Welcome] User is logged in.');
       const userName = this.user.userName();
       const planetName = this.user.planetName();
 
       if (userName && planetName) {
-        console.log(`[Welcome] User ${userName} on planet ${planetName} is fully authenticated.`);
         const planetId = this.user.planetId();
         this.router.navigate(['/planet', planetId]);
         return;
@@ -46,25 +43,20 @@ export class WelcomeComponent implements OnInit {
 
       console.warn('[Welcome] User is logged in but session data is incomplete.');
       if (!planetName) {
-        console.log('[Welcome] Missing planet name. Redirecting to planet-selector.');
         this.router.navigate(['/auth/planet-selector']);
         return;
       }
       if (!userName) {
-        console.log('[Welcome] Missing user name. Redirecting to username-input.');
         this.router.navigate(['/auth/username-input']);
         return;
       }
     } else {
       // New user
-      console.log('[Welcome] New user detected.');
       if (queryPlanet) {
-        console.log(`[Welcome] New user with query param planet: ${queryPlanet}.`);
         this.user.setTemporaryPlanet(queryPlanet);
         this.router.navigate(['/auth/planet-confirmation']);
         return;
       } else {
-        console.log('[Welcome] New user without query param. Redirecting to planet-selector.');
         this.router.navigate(['/auth/planet-selector']);
         return;
       }

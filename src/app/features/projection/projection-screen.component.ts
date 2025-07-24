@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PhotoService } from '../../core/services/photo.service';
 import { MissionService } from '../../core/services/mission.service';
@@ -11,6 +11,7 @@ import { RankingComponent } from '../../components/ranking/ranking.component';
   imports: [CommonModule, RankingComponent],
   template: `
     <div class="container">
+      <div class="photo-count" *ngIf="photos().length > 0">{{ photos().length }} photos</div>
       <img *ngIf="currentPhoto()" [src]="currentPhoto()?.url" [class.fade]="fade()" class="photo" />
       <div class="ranking">
         <app-ranking />
@@ -50,6 +51,16 @@ import { RankingComponent } from '../../components/ranking/ranking.component';
       padding: 20px 0;
       border-radius: 10px;
     }
+    .photo-count {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: white;
+      font-size: 2em;
+      font-weight: bold;
+      z-index: 50;
+      text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    }
     .progress-bar {
       position: absolute;
       bottom: 0;
@@ -84,11 +95,12 @@ import { RankingComponent } from '../../components/ranking/ranking.component';
     }
   `]
 })
-export class ProjectionScreenComponent implements OnInit {
-  private photos = signal<Photo[]>([]);
+export class ProjectionScreenComponent implements OnInit, OnDestroy {
+  photos = signal<Photo[]>([]);
   private seenPhotos = new Set<string>();
   readonly currentPhoto = signal<Photo | null>(null);
   readonly fade = signal(false);
+  private intervalId?: number;
 
   constructor(
     private photoService: PhotoService,
@@ -96,10 +108,16 @@ export class ProjectionScreenComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.photoService.revalidate(true);
+    await this.photoService.revalidate();
     this.photos.set(this.photoService.getAll());
     this.nextPhoto();
-    setInterval(() => this.nextPhoto(), 8000);
+    this.intervalId = window.setInterval(() => this.nextPhoto(), 8000);
+  }
+
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   private nextPhoto() {

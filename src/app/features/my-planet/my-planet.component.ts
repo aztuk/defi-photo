@@ -46,7 +46,7 @@ export class MyPlanetComponent implements OnInit {
     await Promise.all([
       this.planetService.revalidate(),
       this.missionService.revalidate(),
-    this.photoService.revalidate(true) // <-- AJOUT ici
+    this.photoService.revalidate() // <-- AJOUT ici
     ]);
 
     // ⏳ Résolution de la planète cible

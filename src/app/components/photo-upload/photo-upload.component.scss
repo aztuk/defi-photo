@@ -1,3 +1,5 @@
+@use '../../../assets/styles/mixins' as *;
+@use '../../../assets/styles/variables' as *;
 :host {
     display: block;
     width: 100%;
@@ -11,6 +13,68 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+}
+
+.upload-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: absolute;
+    bottom: 100%;
+    margin-bottom: 16px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform-origin: bottom center;
+    transform: translateY(10px);
+    opacity: 0;
+    pointer-events: none;
+    &.active {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+    }
+}
+
+.toggle-button {}
+
+.upload-button {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $global-primary-color !important;
+    outline: 1px solid rgba($global-primary-color, 1);
+    border-radius: 50%;
+    backdrop-filter: blur(8px);
+    @include applyShadow(rgb(31, 33, 47), 0.5);
+    &.upload-toggle {
+        .fa-solid {
+            color: white;
+            transition: transform 0.3s ease;
+        }
+        &.active .fa-solid {
+            transform: rotate(45deg);
+        }
+        background: linear-gradient(to left, #40424be5, #35363fe5) !important;
+        outline: 1px solid #464752e5;
+        @include applyShadow(#121316e5, 0.5);
+    }
+    .fa-solid {
+        color: rgb(18, 24, 39);
+        font-size: 24px;
+    }
+    span {
+        position: absolute;
+        right: 100%;
+        display: block;
+        white-space: nowrap;
+        color: white;
+        font-weight: 100;
+        margin-right: 16px;
+        text-shadow: 0 0 1px black;
+        filter: drop-shadow(0 1px 2px black);
+    }
 }
 
 .loader-overlay {

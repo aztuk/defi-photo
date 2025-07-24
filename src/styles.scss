@@ -105,7 +105,7 @@ button {
     bottom: 80px;
     right: 16px;
     z-index: 100 !important;
-    width: 72px;
+    /* width: 72px;
     height: 72px;
     display: flex;
     align-items: center;
@@ -117,7 +117,7 @@ button {
     font-weight: bold;
     color: rgb(8, 32, 92);
     backdrop-filter: blur(8px);
-    @include applyShadow(rgb(47, 36, 31), 0.5);
+    @include applyShadow(rgb(47, 36, 31), 0.5);*/
 }
 
 .identity {

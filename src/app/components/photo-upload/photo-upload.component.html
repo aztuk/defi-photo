@@ -1,7 +1,21 @@
-<div class="upload-wrapper" (click)="onClick()">
-    <i class="fa-solid fa-plus" *ngIf="!uploading"></i>
+<div class="upload-wrapper">
+    <div class="upload-options" [class.active]="showOptions" *ngIf="!uploading">
+        <button class="upload-button" (click)="takePhoto()">
+            <i class="fa-solid fa-camera"></i>
+            <span>Prendre une photo</span>
+        </button>
+        <button class="upload-button" (click)="chooseFromLibrary()">
+            <i class="fa-solid fa-images"></i>
+            <span>Choisir de la bibliothèque</span>
+        </button>
+    </div>
 
-    <input #fileInput type="file" accept="image/*" (change)="onFileChange($event)" hidden />
+    <button class="upload-button upload-toggle" [class.active]="showOptions" (click)="toggleOptions($event)" *ngIf="!uploading">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+
+    <input #cameraInput type="file" accept="image/*" capture="environment" (change)="onFileChange($event)" hidden />
+    <input #libraryInput type="file" accept="image/*" multiple (change)="onFileChange($event)" hidden />
 
     <div class="loader-overlay" *ngIf="uploading">
         <div class="spinner"></div>

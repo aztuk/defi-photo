@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PhotoService } from '../../core/services/photo.service';
 import { Photo } from '../../core/interfaces/interfaces.models';
@@ -17,6 +17,19 @@ import { PhotoUploadComponent } from '../../components/photo-upload/photo-upload
 export class GalleryComponent implements OnInit {
   photos = signal<Photo[]>([]);
   selected = signal<Photo | null>(null);
+  photoCount = signal(0);
+
+  viewerPhotos = computed(() => {
+    const mainPhotos = this.photos();
+    const selectedPhoto = this.selected();
+
+    if (selectedPhoto && mainPhotos.findIndex(p => p.id === selectedPhoto.id) === -1) {
+      // This is our temporary photo, add it to the start of the list for the viewer
+      return [selectedPhoto, ...mainPhotos];
+    }
+    // Otherwise, just use the main photo list
+    return mainPhotos;
+  });
 
   constructor(
     private photoService: PhotoService,
@@ -24,7 +37,7 @@ export class GalleryComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.photoService.revalidate(true, 'desc');
+    await this.photoService.revalidate(false, 'desc');
     this.photos.set(this.photoService.getAll());
   }
 
@@ -37,12 +50,13 @@ export class GalleryComponent implements OnInit {
   }
 
   async onDelete(photo: Photo) {
-    const confirmed = confirm('Supprimer cette photo ?');
+    const confirmed = confirm('Êtes-vous sûr de vouloir supprimer cette photo ? Elle disparaîtra pour de bon !');
     if (!confirmed) return;
 
     const success = await this.photoService.deletePhoto(photo, this.userContext.userName());
     if (success) {
-      await this.photoService.revalidate(true, 'desc');
+      // No need to revalidate here, the service already does it.
+      // We just need to update the local signal.
       this.photos.set(this.photoService.getAll());
     }
     this.selected.set(null);
@@ -50,7 +64,12 @@ export class GalleryComponent implements OnInit {
 
   getSelectedIndex(): number {
     const current = this.selected();
-    return current ? this.photos().findIndex(p => p.id === current.id) : 0;
+    if (!current) return 0;
+
+    const photosForViewer = this.viewerPhotos();
+    const index = photosForViewer.findIndex(p => p.id === current.id);
+
+    return index === -1 ? 0 : index;
   }
 
   canEdit(photo: Photo): boolean {
@@ -58,7 +77,11 @@ export class GalleryComponent implements OnInit {
   }
 
   async onPhotoUploaded() {
-    await this.photoService.revalidate(true, 'desc');
+    // No need to revalidate here, the service already does it.
+    // We just need to update the local signal.
     this.photos.set(this.photoService.getAll());
+  }
+  onCountChange(count: number) {
+    this.photoCount.set(count);
   }
 }

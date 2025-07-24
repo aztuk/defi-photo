@@ -1,3 +1,4 @@
+@use '../../../assets/styles/mixins' as *;
 @use '../../../assets/styles/variables' as *;
 .gallery {
     display: grid;
@@ -33,7 +34,10 @@
     img {
         width: 100%;
         height: 100%;
+        position: relative;
+        z-index: 10;
         object-fit: cover;
+        transition: all 0.5s ease-in-out;
     }
     .delete {
         position: absolute;
@@ -48,6 +52,51 @@
         height: 24px;
         line-height: 24px;
         text-align: center;
+    }
+    &.uploading {
+        img {
+            filter: blur(10px);
+        }
+        .overlay {
+            position: absolute;
+            z-index: 20;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .progress {
+                background: rgba(white, $alpha: .2);
+                width: 80px;
+                height: 80px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                color: white;
+                font-size: 22px;
+                backdrop-filter: blur(50px);
+            }
+            .error-badge {
+                color: white;
+                text-align: center;
+                display: flex;
+                align-items: center;
+                width: 100%;
+                height: 100%;
+                font-size: 13px;
+                background: #8b0000a3;
+                padding: 12px;
+                @include applyShadow(black, .05);
+            }
+        }
+        &.upload-success {
+            img {
+                filter: blur(0px);
+            }
+        }
     }
 }
 

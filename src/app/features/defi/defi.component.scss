@@ -24,6 +24,11 @@
     }
 }
 
+.count {
+    font-size: 13px;
+    color: #ffffff50;
+}
+
 .title {
     font-size: calc(13px + 3px * var(--shrink));
     color: $text-color-muted-hard;
