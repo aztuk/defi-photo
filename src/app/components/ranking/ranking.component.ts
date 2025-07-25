@@ -6,6 +6,7 @@ import { UserContextService } from '../../core/context/user-context.service';
 import { Router } from '@angular/router';
 import { PlanetService } from '../../core/services/planet.service';
 import { MissionService } from '../../core/services/mission.service';
+import { RankingService } from '../../core/services/ranking.service';
 
 @Component({
   selector: 'app-ranking',
@@ -28,6 +29,7 @@ export class RankingComponent implements OnInit, OnChanges {
   constructor(
     private planetService: PlanetService,
     private missionService: MissionService,
+    private rankingService: RankingService,
     private userContext: UserContextService,
     private router: Router
   ) {
@@ -66,36 +68,21 @@ export class RankingComponent implements OnInit, OnChanges {
 
     this.loading.set(true);
 
-    await Promise.all([
-      this.planetService.revalidate(),
-      this.missionService.revalidate(),
-    ]);
+    try {
+      // Utilise le service centralisé pour récupérer le classement
+      const classement = await this.rankingService.getClassement();
 
-    const allPlanets = this.planetService.getAll();
-    if (!this.userContext.planet()) {
-      this.userContext.initFromPlanetsList(allPlanets);
+      // Si nécessaire, initialise le contexte utilisateur
+      const allPlanets = this.planetService.getAll();
+      if (!this.userContext.planet()) {
+        this.userContext.initFromPlanetsList(allPlanets);
+      }
+
+      this.planetsProgress.set(classement);
+    } catch (error) {
+      console.error('Error fetching ranking:', error);
+    } finally {
+      this.loading.set(false);
     }
-
-    const progressMap = await this.missionService.getAllMissionProgress();
-
-    const fullList: PlanetWithMissionsProgress[] = this.planetService.getAll().map(p => {
-      const progress = progressMap.get(p.id) || [];
-      const validated = progress.filter(m => m.validated);
-      const score = validated.reduce((acc, m) => acc + m.points, 0);
-      const percent = progress.length === 0 ? 0 : Math.round((validated.length / progress.length) * 100);
-      return {
-        ...p,
-        missionsProgress: progress,
-        missionsValidated: validated.length,
-        progressPercent: percent,
-        score: score
-      };
-    });
-
-    // Tri décroissant par score
-    fullList.sort((a, b) => b.score - a.score);
-
-    this.planetsProgress.set(fullList);
-    this.loading.set(false);
   }
 }

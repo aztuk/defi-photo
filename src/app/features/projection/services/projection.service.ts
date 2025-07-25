@@ -2,6 +2,7 @@ import { Injectable, signal, computed, effect, OnDestroy, WritableSignal } from 
 import { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '../../../core/services/supabase.client';
 import { Photo, Planet, ClassementPlanet } from '../../../core/interfaces/interfaces.models';
+import { RankingService } from '../../../core/services/ranking.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class ProjectionSyncService implements OnDestroy {
   readonly totalPhotos = computed(() => this.photos().length);
   readonly isConnected = signal(navigator.onLine);
 
-  constructor() {
+  constructor(private rankingService: RankingService) {
     this.setupOnlineStatusListener();
   }
 
@@ -46,7 +47,7 @@ export class ProjectionSyncService implements OnDestroy {
     try {
       const [photosData, classementData] = await Promise.all([
         this.fetchPhotos(),
-        this.fetchClassement(),
+        this.rankingService.getClassement(true),
       ]);
       this.photos.set(photosData);
       this.classement.set(classementData);
@@ -70,24 +71,11 @@ export class ProjectionSyncService implements OnDestroy {
     return data || [];
   }
 
-  private async fetchClassement(): Promise<ClassementPlanet[]> {
-    const { data, error } = await this.supabase.rpc('get_planet_ranking');
-    if (error) {
-      throw new Error(`[ProjectionSyncService] Fetch classement error: ${error.message}`);
-    }
-    return (data as any[]).map(item => ({
-      id: item.planet_id,
-      name: item.planet_name,
-      score: item.total_points,
-      photoCount: item.photo_count,
-      image_url: `assets/planets/downscaled/${item.planet_name.toLowerCase()}`,
-      order: 0
-    }));
-  }
+  // La méthode fetchClassement est supprimée car elle est remplacée par rankingService.getClassement
 
   private async refreshClassement(): Promise<void> {
     try {
-      const classementData = await this.fetchClassement();
+      const classementData = await this.rankingService.getClassement(true);
       this.classement.set(classementData);
     } catch (error) {
       console.error('[ProjectionSyncService] Refresh classement failed:', error);
