@@ -4,6 +4,7 @@ export interface Planet {
   name: string;
   image_url: string;
   order: number;
+  last_score_update?: string;
 }
 
 export interface PreFillData {
@@ -56,4 +57,5 @@ export interface SwipeCarouselItem {
 export interface ClassementPlanet extends Planet {
   score: number;
   photoCount: number;
+  lastScoreUpdate?: string; // ISO timestamp string
 }

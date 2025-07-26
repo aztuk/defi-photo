@@ -35,14 +35,22 @@ export class RankingService {
         throw error;
       }
 
-      const classement = (data as any[]).map(item => ({
-        id: item.planet_id,
-        name: item.planet_name,
-        score: item.total_points,
-        photoCount: item.photo_count,
-        image_url: `assets/planets/downscaled/${item.planet_name.toLowerCase()}`,
-        order: 0
-      }));
+      console.log('[RankingService] Raw ranking data:', data);
+
+      const classement = (data as any[]).map(item => {
+        const planet = {
+          id: item.planet_id,
+          name: item.planet_name,
+          score: item.total_points,
+          photoCount: item.photo_count,
+          image_url: `assets/planets/downscaled/${item.planet_name.toLowerCase()}`,
+          lastScoreUpdate: item.last_score_update,
+          order: 0
+        };
+
+        console.log(`[RankingService] Mapped planet ${item.planet_name}:`, planet);
+        return planet;
+      });
 
       this._classement.set(classement);
       this.lastFetchTime = now;

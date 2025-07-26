@@ -5,6 +5,7 @@ import { supabase } from './supabase.client';
 import { Photo } from '../interfaces/interfaces.models';
 import { NotificationService } from './notification.service';
 import { UserContextService } from '../context/user-context.service';
+import { PlanetService } from './planet.service';
 
 export interface UploadPreview {
   id: string;
@@ -41,7 +42,11 @@ export class PhotoService {
   private uploadQueue: UploadQueueItem[] = [];
   private isProcessingQueue = false;
 
-  constructor(private notificationService: NotificationService, private userContext: UserContextService) {
+  constructor(
+    private notificationService: NotificationService,
+    private userContext: UserContextService,
+    private planetService: PlanetService
+  ) {
     this.revalidate();
 
     effect(() => {
@@ -206,7 +211,14 @@ export class PhotoService {
           }
 
           if (missionId && planetId) {
+            console.log(`[PhotoService] Photo uploaded for planet ${planetId}, mission ${missionId}`);
+
             await this.supabase.from('planet_missions').update({ validated: true }).match({ mission_id: missionId, planet_id: planetId });
+
+            // Update the planet's timestamp when a photo is successfully uploaded
+            console.log(`[PhotoService] Calling updateScoreTimestamp for planet ${planetId}`);
+            await this.planetService.updateScoreTimestamp(planetId);
+            console.log(`[PhotoService] Finished updateScoreTimestamp for planet ${planetId}`);
           }
 
           this.photos.update(current => [newPhoto as Photo, ...current]);
@@ -263,6 +275,11 @@ export class PhotoService {
         if (updateError) {
           console.warn('[PhotoService] Erreur update validated=false :', updateError.message);
         }
+
+        // Update the planet's timestamp when a photo is deleted
+        console.log(`[PhotoService] Calling updateScoreTimestamp for planet ${photo.planet_id} after photo deletion`);
+        await this.planetService.updateScoreTimestamp(photo.planet_id);
+        console.log(`[PhotoService] Finished updateScoreTimestamp for planet ${photo.planet_id} after photo deletion`);
       }
     }
 

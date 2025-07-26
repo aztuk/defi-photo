@@ -51,6 +51,10 @@ export const appRoutes: Routes = [
   path: 'test-access',
   loadComponent: () => import('./features/test-access/test-access.component').then(m => m.TestAccessComponent),
 },
+{
+  path: 'test-timestamp',
+  loadComponent: () => import('./features/test-access/test-timestamp.component').then(m => m.TestTimestampComponent),
+},
 
   {
     path: 'gallery',
