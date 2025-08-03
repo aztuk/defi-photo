@@ -142,29 +142,68 @@ export class FloatingGalleryComponent implements AfterViewInit, OnDestroy, OnCha
 
     try {
       let texture: PIXI.Texture;
-      let isVideo = false;
+      let videoElement: HTMLVideoElement | null = null;
 
       // Check if it's a video
       if (photo.media_type === 'video') {
-        // For videos, create a video element and use it as texture source
-        const videoElement = document.createElement('video');
-        videoElement.src = photo.url;
-        videoElement.muted = true;
-        videoElement.playsInline = true;
-        videoElement.loop = true;
-        videoElement.crossOrigin = 'anonymous';
+        try {
+          // For videos, create a video element and use it as texture source
+          videoElement = document.createElement('video');
+          videoElement.src = photo.url;
+          videoElement.muted = true;
+          videoElement.playsInline = true;
+          videoElement.loop = true;
+          videoElement.crossOrigin = 'anonymous';
+          videoElement.preload = 'metadata';
 
-        // Wait for video to load metadata
-        await new Promise((resolve, reject) => {
-          videoElement.onloadedmetadata = resolve;
-          videoElement.onerror = reject;
-        });
+          // Wait for video to load metadata with timeout
+          await new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+              reject(new Error('Video loading timeout'));
+            }, 10000); // 10 second timeout
 
-        texture = PIXI.Texture.from(videoElement);
-        isVideo = true;
+            videoElement!.onloadedmetadata = () => {
+              clearTimeout(timeout);
+              resolve(void 0);
+            };
+            videoElement!.onerror = (error) => {
+              clearTimeout(timeout);
+              reject(error);
+            };
 
-        // Start playing the video (muted, no autoplay in projection)
-        // Videos will be static frames in projection mode
+            // Force load
+            videoElement!.load();
+          });
+
+          // Set to first frame for thumbnail
+          videoElement.currentTime = 0;
+
+          // Wait for seek to complete
+          await new Promise((resolve) => {
+            videoElement!.onseeked = resolve;
+            if (videoElement!.readyState >= 2) {
+              resolve(void 0);
+            }
+          });
+
+          texture = PIXI.Texture.from(videoElement);
+
+          // Only play videos on the highest layer (layer 4, zIndex 5)
+          const isTopLayer = layerIndex === this.config.layers.length - 1;
+          if (isTopLayer) {
+            // Start playing the video in loop for top layer
+            setTimeout(() => {
+              videoElement!.play().catch(error => {
+                console.log('Video autoplay prevented:', error);
+              });
+            }, 100);
+          }
+          // For other layers, keep video paused at first frame (thumbnail)
+        } catch (videoError) {
+          console.warn(`Failed to load video ${photo.url}, falling back to image loading:`, videoError);
+          // Fallback: try to load as image (might work for some video formats)
+          texture = await PIXI.Assets.load(photo.url);
+        }
       } else {
         texture = await PIXI.Assets.load(photo.url);
       }
@@ -196,17 +235,7 @@ export class FloatingGalleryComponent implements AfterViewInit, OnDestroy, OnCha
       sprite.anchor.set(0.5);
       container.addChild(sprite);
 
-      // Add video icon for videos
-      if (isVideo) {
-        const videoIcon = new PIXI.Text('📹', {
-          fontSize: Math.min(texture.width, texture.height) * 0.1,
-          fill: 0xffffff,
-        });
-        videoIcon.anchor.set(0.5);
-        videoIcon.x = texture.width / 2 - videoIcon.width / 2 - 10;
-        videoIcon.y = -texture.height / 2 + videoIcon.height / 2 + 10;
-        container.addChild(videoIcon);
-      }
+      // No video icon in projection mode
 
       // Normalize size first
       const maxScreenDim = Math.max(this.app.screen.width, this.app.screen.height);
