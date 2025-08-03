@@ -14,8 +14,8 @@
         <i class="fa-solid fa-plus"></i>
     </button>
 
-    <input #cameraInput type="file" accept="image/*" capture="environment" (change)="onFileChange($event)" hidden />
-    <input #libraryInput type="file" accept="image/*" multiple (change)="onFileChange($event)" hidden />
+    <input #cameraInput type="file" accept="image/*,video/*" capture="environment" (change)="onFileChange($event)" hidden />
+    <input #libraryInput type="file" accept="image/*,video/*" multiple (change)="onFileChange($event)" hidden />
 
     <div class="loader-overlay" *ngIf="uploading">
         <div class="spinner"></div>

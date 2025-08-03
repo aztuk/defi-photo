@@ -1,15 +1,36 @@
 <div class="viewer">
     <div class="scroller" #scroller>
-        <div class="slide" *ngFor="let photo of photos">
-            <img [src]="photo.url" />
+        <div class="slide" *ngFor="let photo of photos; let i = index">
+            <!-- Photo -->
+            <img *ngIf="photo.media_type === 'photo'" [src]="photo.url" (click)="onMediaClick()" />
+
+            <!-- Video -->
+            <div *ngIf="photo.media_type === 'video'" class="video-container">
+                <video #videoElement [src]="photo.url" muted playsinline (click)="onMediaClick()">
+                </video>
+
+                <!-- Play/Pause button overlay for videos -->
+                <div class="video-controls" [class.visible]="showControls() && currentIndex() === i && photo.media_type === 'video'">
+                    <button class="play-pause-btn" (click)="onTogglePlayPause()">
+                        <i class="fa-solid" [class.fa-play]="!isPlaying()" [class.fa-pause]="isPlaying()"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="actions">
-        <button *ngIf="canEdit()" (click)="onDelete()" class="danger"><i class="fa-solid fa-trash"></i> Supprimer</button>
+    <!-- Action buttons (hidden by default, shown on click for 5s) -->
+    <div class="actions" [class.visible]="showControls()">
+        <button *ngIf="canEdit()" (click)="onDelete()" class="danger">
+            <i class="fa-solid fa-trash"></i> Supprimer
+        </button>
         <div class="main-button">
-            <button (click)="onDownload()"><i class="fa-solid fa-download"></i> Télécharger</button>
-            <button (click)="close.emit()" class="round"><i class="fa-solid fa-xmark"></i> </button>
+            <button (click)="onDownload()">
+                <i class="fa-solid fa-download"></i> Télécharger
+            </button>
+            <button (click)="close.emit()" class="round">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
     </div>
 </div>

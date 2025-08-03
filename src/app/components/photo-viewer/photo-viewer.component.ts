@@ -7,7 +7,10 @@ import {
   ElementRef,
   ViewChild,
   inject,
-  OnInit
+  OnInit,
+  QueryList,
+  ViewChildren,
+  OnDestroy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Photo } from '../../core/interfaces/interfaces.models';
@@ -22,7 +25,7 @@ import { computed, signal, effect } from '@angular/core';
   styleUrls: ['./photo-viewer.component.scss']
 })
 
-export class PhotoViewerComponent implements AfterViewInit, OnInit {
+export class PhotoViewerComponent implements AfterViewInit, OnInit, OnDestroy {
   @Input() photos: Photo[] = [];
   @Input() index = 0;
 
@@ -30,6 +33,7 @@ export class PhotoViewerComponent implements AfterViewInit, OnInit {
   @Output() delete = new EventEmitter<Photo>();
 
   @ViewChild('scroller') scrollerRef!: ElementRef<HTMLDivElement>;
+  @ViewChildren('videoElement') videoElements!: QueryList<ElementRef<HTMLVideoElement>>;
 
   private user = inject(UserContextService);
   readonly currentIndex = signal(0);
@@ -40,11 +44,102 @@ export class PhotoViewerComponent implements AfterViewInit, OnInit {
     return photo.user_name === this.user.userName();
   });
 
+  // UI state
+  readonly showControls = signal(false);
+  readonly isPlaying = signal(false);
+  private hideControlsTimeout?: any;
+
   constructor() {
+    // Auto-hide controls after 5 seconds
+    effect(() => {
+      if (this.showControls()) {
+        this.resetHideControlsTimer();
+      }
+    });
   }
 
   ngOnInit(): void {
     this.currentIndex.set(this.index);
+  }
+
+  ngOnDestroy(): void {
+    if (this.hideControlsTimeout) {
+      clearTimeout(this.hideControlsTimeout);
+    }
+  }
+
+  private resetHideControlsTimer(): void {
+    if (this.hideControlsTimeout) {
+      clearTimeout(this.hideControlsTimeout);
+    }
+    this.hideControlsTimeout = setTimeout(() => {
+      this.showControls.set(false);
+    }, 5000);
+  }
+
+  onMediaClick(): void {
+    this.showControls.set(!this.showControls());
+  }
+
+  onTogglePlayPause(): void {
+    const currentPhoto = this.currentPhoto();
+    if (!currentPhoto || currentPhoto.media_type !== 'video') return;
+
+    const videoElement = this.getCurrentVideoElement();
+    if (!videoElement) return;
+
+    if (videoElement.paused) {
+      videoElement.play();
+      this.isPlaying.set(true);
+    } else {
+      videoElement.pause();
+      this.isPlaying.set(false);
+    }
+  }
+
+  private getCurrentVideoElement(): HTMLVideoElement | null {
+    const currentIdx = this.currentIndex();
+    const videoElements = this.videoElements.toArray();
+
+    // Find the video element for the current slide
+    let videoIndex = 0;
+    for (let i = 0; i <= currentIdx; i++) {
+      if (this.photos[i]?.media_type === 'video') {
+        if (i === currentIdx) {
+          return videoElements[videoIndex]?.nativeElement || null;
+        }
+        videoIndex++;
+      }
+    }
+    return null;
+  }
+
+  private autoplayCurrentVideo(): void {
+    const currentPhoto = this.currentPhoto();
+    if (!currentPhoto || currentPhoto.media_type !== 'video') return;
+
+    setTimeout(() => {
+      const videoElement = this.getCurrentVideoElement();
+      if (videoElement) {
+        videoElement.currentTime = 0;
+        videoElement.play().then(() => {
+          this.isPlaying.set(true);
+        }).catch(error => {
+          console.log('Autoplay prevented:', error);
+          this.isPlaying.set(false);
+        });
+      }
+    }, 100);
+  }
+
+  private pauseAllVideos(): void {
+    this.videoElements.forEach(videoRef => {
+      const video = videoRef.nativeElement;
+      if (!video.paused) {
+        video.pause();
+      }
+    });
+    this.isPlaying.set(false);
   }
 
   onDelete() {
@@ -53,7 +148,6 @@ export class PhotoViewerComponent implements AfterViewInit, OnInit {
       this.delete.emit(photo);
     }
   }
-
 
   async onDownload() {
     const photo = this.currentPhoto();
@@ -66,13 +160,16 @@ export class PhotoViewerComponent implements AfterViewInit, OnInit {
 
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'photo.jpg';
+      const extension = photo.media_type === 'video' ? 'mp4' : 'jpg';
+      const filename = photo.media_type === 'video' ? 'video' : 'photo';
+      a.download = `${filename}.${extension}`;
       a.click();
 
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('[PhotoViewer] Erreur téléchargement :', error);
-      alert('Impossible de télécharger cette photo.');
+      const mediaType = photo.media_type === 'video' ? 'vidéo' : 'photo';
+      alert(`Impossible de télécharger cette ${mediaType}.`);
     }
   }
 
@@ -81,12 +178,19 @@ export class PhotoViewerComponent implements AfterViewInit, OnInit {
     if (el) {
       el.addEventListener('scroll', () => {
         const i = Math.round(el.scrollLeft / el.offsetWidth);
-        this.currentIndex.set(i);
+        const previousIndex = this.currentIndex();
+
+        if (i !== previousIndex) {
+          this.pauseAllVideos();
+          this.currentIndex.set(i);
+          this.autoplayCurrentVideo();
+        }
       });
 
       setTimeout(() => {
         el.scrollTo({ left: this.index * el.offsetWidth, behavior: 'instant' as ScrollBehavior });
-      }, 0);
+        this.autoplayCurrentVideo();
+      }, 100);
     }
   }
 }

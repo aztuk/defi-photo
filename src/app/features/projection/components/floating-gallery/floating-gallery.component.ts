@@ -141,7 +141,33 @@ export class FloatingGalleryComponent implements AfterViewInit, OnDestroy, OnCha
     const layerConfig = this.config.layers[layerIndex];
 
     try {
-      const texture = await PIXI.Assets.load(photo.url);
+      let texture: PIXI.Texture;
+      let isVideo = false;
+
+      // Check if it's a video
+      if (photo.media_type === 'video') {
+        // For videos, create a video element and use it as texture source
+        const videoElement = document.createElement('video');
+        videoElement.src = photo.url;
+        videoElement.muted = true;
+        videoElement.playsInline = true;
+        videoElement.loop = true;
+        videoElement.crossOrigin = 'anonymous';
+
+        // Wait for video to load metadata
+        await new Promise((resolve, reject) => {
+          videoElement.onloadedmetadata = resolve;
+          videoElement.onerror = reject;
+        });
+
+        texture = PIXI.Texture.from(videoElement);
+        isVideo = true;
+
+        // Start playing the video (muted, no autoplay in projection)
+        // Videos will be static frames in projection mode
+      } else {
+        texture = await PIXI.Assets.load(photo.url);
+      }
 
       const container = new PIXI.Container() as ParallaxContainer;
       container.layerIndex = layerIndex;
@@ -169,6 +195,18 @@ export class FloatingGalleryComponent implements AfterViewInit, OnDestroy, OnCha
       const sprite = new PIXI.Sprite(texture);
       sprite.anchor.set(0.5);
       container.addChild(sprite);
+
+      // Add video icon for videos
+      if (isVideo) {
+        const videoIcon = new PIXI.Text('📹', {
+          fontSize: Math.min(texture.width, texture.height) * 0.1,
+          fill: 0xffffff,
+        });
+        videoIcon.anchor.set(0.5);
+        videoIcon.x = texture.width / 2 - videoIcon.width / 2 - 10;
+        videoIcon.y = -texture.height / 2 + videoIcon.height / 2 + 10;
+        container.addChild(videoIcon);
+      }
 
       // Normalize size first
       const maxScreenDim = Math.max(this.app.screen.width, this.app.screen.height);

@@ -171,9 +171,23 @@ export class PhotoService {
 
       updatePreview(0, 'uploading');
 
-      if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        updatePreview(0, 'error', 'Fichier trop volumineux (max 10MB)');
+      // Detect media type from MIME type
+      const mediaType = file.type.startsWith('video/') ? 'video' : 'photo';
+
+      // Adjust size limit for videos (100MB for videos, 10MB for photos)
+      const maxSize = mediaType === 'video' ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
+      if (file.size > maxSize) {
+        const maxSizeText = mediaType === 'video' ? '100MB' : '10MB';
+        updatePreview(0, 'error', `Fichier trop volumineux (max ${maxSizeText})`);
         return reject(new Error('File too large'));
+      }
+
+      // Validate file type
+      const isValidImage = file.type.startsWith('image/');
+      const isValidVideo = file.type.startsWith('video/') && file.type === 'video/mp4';
+      if (!isValidImage && !isValidVideo) {
+        updatePreview(0, 'error', 'Format non supporté. Utilisez des images ou des vidéos MP4.');
+        return reject(new Error('Invalid file type'));
       }
 
       const extension = file.name.split('.').pop();
@@ -202,7 +216,7 @@ export class PhotoService {
           const { data: { publicUrl } } = this.supabase.storage.from('photos').getPublicUrl(path);
 
           const { data: newPhoto, error: insertError } = await this.supabase.from('photos').insert({
-            mission_id: missionId, planet_id: planetId, user_name: userName, url: publicUrl, status: 'published',
+            mission_id: missionId, planet_id: planetId, user_name: userName, url: publicUrl, status: 'published', media_type: mediaType,
           }).select().single();
 
           if (insertError || !newPhoto) {

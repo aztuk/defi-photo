@@ -44,6 +44,7 @@ export interface Photo {
   url: string;
   status: 'published' | 'pending' | 'rejected';
   created_at: string;
+  media_type: 'photo' | 'video';
 }
 
 

@@ -1,13 +1,19 @@
 <div class="gallery {{size}}">
     <div *ngFor="let photo of temporaryPhotos()" class="photo uploading" [class.upload-success]="photo.status === 'success'" (click)="onClick(photo)">
-        <img [src]="photo.url" [alt]="photo.file.name" class="preview" />
+        <img *ngIf="!photo.file.type.startsWith('video/')" [src]="photo.url" [alt]="photo.file.name" class="preview" />
+        <video *ngIf="photo.file.type.startsWith('video/')" [src]="photo.url" class="preview" muted playsinline></video>
         <div class="overlay">
             <div class="progress" *ngIf="photo.status === 'uploading'">{{ photo.progress | number:'1.0-0' }}%</div>
             <div class="error-badge" *ngIf="photo.status === 'error'">{{ (photo.error || 'Une erreur est survenue').length > 50 ? ((photo.error || 'Une erreur est survenue') | slice:0:50) + '...' : (photo.error || 'Une erreur est survenue') }}</div>
+            <div class="video-icon" *ngIf="photo.file.type.startsWith('video/')">📹</div>
         </div>
     </div>
     <div *ngFor="let photo of photos" class="photo" (click)="onClick(photo)">
-        <img [src]="photo.url" [alt]="photo.id" loading="lazy" />
+        <img *ngIf="photo.media_type === 'photo'" [src]="photo.url" [alt]="photo.id" loading="lazy" />
+        <video *ngIf="photo.media_type === 'video'" [src]="photo.url" muted playsinline loading="lazy"></video>
+        <div class="play-icon" *ngIf="photo.media_type === 'video'">
+            <i class="fa-solid fa-play"></i>
+        </div>
         <button *ngIf="canEdit" class="delete" (click)="onDelete(photo, $event)">✕</button>
     </div>
 </div>

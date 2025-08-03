@@ -49,6 +49,7 @@ export class PhotoGalleryComponent implements OnChanges {
             planet_id: null,
             status: 'published',
             created_at: new Date().toISOString(),
+            media_type: photo.file.type.startsWith('video/') ? 'video' : 'photo',
           };
           this.photoClick.emit(tempPhoto);
         }
