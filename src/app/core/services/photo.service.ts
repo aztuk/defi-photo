@@ -56,6 +56,7 @@ export class PhotoService {
     });
   }
 
+
   getAll(forUserName?: string): Photo[] {
     if (forUserName) {
       return this.photos().filter(p => p.user_name === forUserName);
@@ -174,11 +175,16 @@ export class PhotoService {
       // Detect media type from MIME type
       const mediaType = file.type.startsWith('video/') ? 'video' : 'photo';
 
-      // Adjust size limit for videos (100MB for videos, 10MB for photos)
-      const maxSize = mediaType === 'video' ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
+      // Adjust size limit based on Supabase Storage limits
+      // Supabase configured to 300MB max file size
+      // Set reasonable limits for user experience
+      const maxSize = mediaType === 'video' ? 300 * 1024 * 1024 : 50 * 1024 * 1024;
       if (file.size > maxSize) {
-        const maxSizeText = mediaType === 'video' ? '100MB' : '10MB';
-        updatePreview(0, 'error', `Fichier trop volumineux (max ${maxSizeText})`);
+        const maxSizeText = mediaType === 'video' ? '300MB' : '50MB';
+        const fileSizeMB = Math.round(file.size / (1024 * 1024) * 10) / 10;
+        const errorMsg = `Fichier trop volumineux (${fileSizeMB}MB > ${maxSizeText})`;
+        updatePreview(0, 'error', errorMsg);
+        this.notificationService.show(errorMsg);
         return reject(new Error('File too large'));
       }
 
@@ -186,14 +192,16 @@ export class PhotoService {
       const isValidImage = file.type.startsWith('image/');
       const isValidVideo = file.type.startsWith('video/') && file.type === 'video/mp4';
       if (!isValidImage && !isValidVideo) {
-        updatePreview(0, 'error', 'Format non supporté. Utilisez des images ou des vidéos MP4.');
+        const errorMsg = 'Format non supporté. Utilisez des images ou des vidéos MP4.';
+        updatePreview(0, 'error', errorMsg);
+        this.notificationService.show(errorMsg);
         return reject(new Error('Invalid file type'));
       }
 
       const extension = file.name.split('.').pop();
       const path = `${planetId || 'gallery'}/${missionId || 'user-photos'}/${Date.now()}.${extension}`;
-
       const url = `${environment.supabaseUrl}/storage/v1/object/photos/${path}`;
+
       const xhr = new XMLHttpRequest();
       xhr.open('POST', url, true);
 
@@ -201,54 +209,145 @@ export class PhotoService {
       xhr.setRequestHeader('x-upsert', 'true');
       xhr.setRequestHeader('Content-Type', file.type);
 
-
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
           const progress = Math.round((event.loaded / event.total) * 99);
-          console.log(`[PhotoService] [${id}] Upload progress: ${progress}%`);
           updatePreview(progress, 'uploading');
         }
       };
 
       xhr.onload = async () => {
         if (xhr.status >= 200 && xhr.status < 300) {
-          console.log(`[PhotoService] [${id}] Upload complete. Status: ${xhr.status}`);
           const { data: { publicUrl } } = this.supabase.storage.from('photos').getPublicUrl(path);
 
-          const { data: newPhoto, error: insertError } = await this.supabase.from('photos').insert({
-            mission_id: missionId, planet_id: planetId, user_name: userName, url: publicUrl, status: 'published', media_type: mediaType,
-          }).select().single();
+          const insertData = {
+            mission_id: missionId,
+            planet_id: planetId,
+            user_name: userName,
+            url: publicUrl,
+            status: 'published',
+            media_type: mediaType
+          };
+
+          const { data: newPhoto, error: insertError } = await this.supabase.from('photos').insert(insertData).select().single();
 
           if (insertError || !newPhoto) {
             updatePreview(0, 'error', 'Erreur base de données.');
+            this.notificationService.show('Erreur lors de l\'enregistrement en base de données');
             return reject(insertError || new Error('DB insert failed'));
           }
 
           if (missionId && planetId) {
-            console.log(`[PhotoService] Photo uploaded for planet ${planetId}, mission ${missionId}`);
-
             await this.supabase.from('planet_missions').update({ validated: true }).match({ mission_id: missionId, planet_id: planetId });
-
-            // Update the planet's timestamp when a photo is successfully uploaded
-            console.log(`[PhotoService] Calling updateScoreTimestamp for planet ${planetId}`);
             await this.planetService.updateScoreTimestamp(planetId);
-            console.log(`[PhotoService] Finished updateScoreTimestamp for planet ${planetId}`);
           }
 
           this.photos.update(current => [newPhoto as Photo, ...current]);
-          updatePreview(100, 'success', undefined, publicUrl);
+
+          // Clean up blob URL and remove temporary photo to prevent any blob URL errors
+          const preview = this.temporaryPhotos().find(p => p.id === id);
+          if (preview?.url) {
+            URL.revokeObjectURL(preview.url);
+          }
+
+          // Remove the temporary photo completely after successful upload
+          this.temporaryPhotos.update(current => current.filter(p => p.id !== id));
+
           resolve();
         } else {
-          console.error(`[PhotoService] [${id}] Upload failed with status: ${xhr.status}`, xhr.responseText);
-          updatePreview(0, 'error', `Échec: ${xhr.statusText}`);
-          reject(new Error(`Upload failed: ${xhr.statusText}`));
+          const errorMsg = `Upload failed: ${xhr.status}`;
+          updatePreview(0, 'error', errorMsg);
+          this.notificationService.show('Erreur lors de l\'upload');
+
+          // Retry mechanism
+          setTimeout(async () => {
+            try {
+              await this._performUploadRetry(item, 1);
+              resolve();
+            } catch (retryError) {
+              reject(new Error(`Upload failed: ${xhr.statusText}`));
+            }
+          }, 100);
         }
       };
 
       xhr.onerror = () => {
-        console.error(`[PhotoService] [${id}] Network error during upload.`);
         updatePreview(0, 'error', 'Erreur réseau.');
+        this.notificationService.show('Erreur réseau lors de l\'upload');
         reject(new Error('Network Error'));
+      };
+
+      xhr.send(file);
+    });
+  }
+
+  private async _performUploadRetry(item: UploadQueueItem, retryAttempt: number): Promise<void> {
+    const { id, file, missionId, planetId, userName } = item;
+
+    const updatePreview = (progress: number, status: 'queued' | 'uploading' | 'success' | 'error', error?: string, publicUrl?: string) => {
+      this.temporaryPhotos.update(current =>
+        current.map(p => p.id === id ? { ...p, progress, status, error, publicUrl } : p)
+      );
+    };
+
+    return new Promise((resolve, reject) => {
+      const mediaType = file.type.startsWith('video/') ? 'video' : 'photo';
+      const extension = file.name.split('.').pop();
+      const path = `${planetId || 'gallery'}/${missionId || 'user-photos'}/${Date.now()}.${extension}`;
+      const url = `${environment.supabaseUrl}/storage/v1/object/photos/${path}`;
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', url, true);
+      xhr.setRequestHeader('Authorization', `Bearer ${environment.supabaseKey}`);
+      xhr.setRequestHeader('x-upsert', 'true');
+      xhr.setRequestHeader('Content-Type', file.type);
+
+      xhr.onload = async () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const { data: { publicUrl } } = this.supabase.storage.from('photos').getPublicUrl(path);
+
+          const insertData = {
+            mission_id: missionId,
+            planet_id: planetId,
+            user_name: userName,
+            url: publicUrl,
+            status: 'published',
+            media_type: mediaType
+          };
+
+          const { data: newPhoto, error: insertError } = await this.supabase.from('photos').insert(insertData).select().single();
+
+          if (insertError || !newPhoto) {
+            updatePreview(0, 'error', 'Erreur base de données (retry).');
+            return reject(insertError || new Error('Retry DB insert failed'));
+          }
+
+          if (missionId && planetId) {
+            await this.supabase.from('planet_missions').update({ validated: true }).match({ mission_id: missionId, planet_id: planetId });
+            await this.planetService.updateScoreTimestamp(planetId);
+          }
+
+          this.photos.update(current => [newPhoto as Photo, ...current]);
+
+          // Clean up blob URL and remove temporary photo to prevent any blob URL errors
+          const preview = this.temporaryPhotos().find(p => p.id === id);
+          if (preview?.url) {
+            URL.revokeObjectURL(preview.url);
+          }
+
+          // Remove the temporary photo completely after successful retry
+          this.temporaryPhotos.update(current => current.filter(p => p.id !== id));
+
+          resolve();
+        } else {
+          updatePreview(0, 'error', `Retry failed: ${xhr.statusText}`);
+          reject(new Error(`Retry failed: ${xhr.statusText}`));
+        }
+      };
+
+      xhr.onerror = () => {
+        updatePreview(0, 'error', 'Erreur réseau (retry).');
+        reject(new Error('Retry Network Error'));
       };
 
       xhr.send(file);
@@ -302,6 +401,12 @@ export class PhotoService {
     }
 
   clearTemporaryPhoto(id: string) {
+    // Clean up blob URL before removing the temporary photo
+    const preview = this.temporaryPhotos().find(p => p.id === id);
+    if (preview?.url) {
+      URL.revokeObjectURL(preview.url);
+    }
+
     this.temporaryPhotos.update(current => current.filter(p => p.id !== id));
   }
 }
